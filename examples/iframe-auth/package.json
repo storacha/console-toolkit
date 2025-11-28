@@ -1,0 +1,27 @@
+{
+  "name": "@storacha/console-toolkit-example-iframe-auth",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@storacha/console-toolkit-react-styled": "workspace:^",
+    "@storacha/console-toolkit-react": "workspace:^",
+    "@storacha/ui-core": "^2.4.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}
+
+

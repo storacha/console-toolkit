@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "../../",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@storacha/console-toolkit-react": ["../react/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*", "src/vite-env.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}
+
+
