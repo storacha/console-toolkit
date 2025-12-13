@@ -217,6 +217,10 @@ export type StorachaAuthFormOptions<T extends As = 'form'> = Options<T> & {
    */
   renderEmailLabel?: () => ReactNode
   /**
+   * Render prop for the email input
+   */
+  renderEmailInput?: () => ReactNode
+  /**
    * Render prop for the submit button
    */
   renderSubmitButton?: (disabled: boolean) => ReactNode
@@ -236,6 +240,7 @@ export const StorachaAuthForm = ({
   renderContainer,
   renderLogo,
   renderEmailLabel,
+  renderEmailInput,
   renderSubmitButton,
   renderTerms,
   children,
@@ -258,6 +263,12 @@ export const StorachaAuthForm = ({
 
   const defaultRenderLogo = () => <img src="/storacha-logo.svg" alt="Storacha" />
   const defaultRenderEmailLabel = () => <label htmlFor="storacha-auth-email">Email</label>
+  const defaultRenderEmailInput = () => (
+    <StorachaAuthEmailInput 
+      id='storacha-auth-email' 
+      required 
+    />
+  )
   const defaultRenderSubmitButton = (disabled: boolean) => (
     <button type="submit" disabled={disabled}>
       Authorize
@@ -280,10 +291,7 @@ export const StorachaAuthForm = ({
       {(renderLogo || defaultRenderLogo)()}
       <div>
         {(renderEmailLabel || defaultRenderEmailLabel)()}
-        <StorachaAuthEmailInput 
-          id='storacha-auth-email' 
-          required 
-        />
+        {(renderEmailInput || defaultRenderEmailInput)()}
       </div>
       <div>
         {(renderSubmitButton || defaultRenderSubmitButton)(submitted)}

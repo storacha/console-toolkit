@@ -9,4 +9,10 @@ coverage/
 .vscode/
 .idea/
 
+# Build artifacts that should not be in src/
+**/src/**/*.js
+**/src/**/*.d.ts
+**/src/**/*.js.map
+**/src/**/*.d.ts.map
+
 
