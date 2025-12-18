@@ -2,6 +2,7 @@ export * from './SpacePicker.js'
 export * from './SpaceCreator.js'
 export * from './SpaceList.js'
 export * from './FileViewer.js'
+export { useFileViewerContext } from './FileViewer.js'
 export * from './SharingTool.js'
 export * from './SpaceEnsurer.js'
 
