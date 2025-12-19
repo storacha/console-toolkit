@@ -4,7 +4,34 @@ The Storacha Console Toolkit is a plug-and-play UI library that allows Web3 appl
 
 ## Overview
 
-The toolkit provides both headless components (logic only, bring your own styling) and styled components (console-exact UI) for seamless integration. Partner applications can quickly add Storacha features such as authentication, space management, uploads, and sharing—by importing only the components they need.
+The toolkit provides both headless components (logic only, bring your own styling) and styled components (console-exact UI) for seamless integration. Partner applications can quickly add Storacha features such as authentication, space management, file uploads, content viewing, and sharing—by importing only the components they need.
+
+## Features
+
+### Authentication
+- Email-based authentication flow
+- Session management
+- Iframe support for embedded contexts
+
+### Space Management
+- **SpacePicker** - List and select spaces
+- **SpaceCreator** - Create public or private spaces
+- **SpaceList** - List content within a space with pagination
+- **SpaceEnsurer** - Ensure a space is selected before rendering
+
+### File Operations
+- **UploadTool** - Upload files, directories, or CAR files
+  - Drag & drop support
+  - Real-time progress tracking
+  - Support for public and private spaces
+  - Wrap in directory option
+- **FileViewer** - View file details (Root CID, Gateway URL, Shards)
+- File removal with shard management
+
+### Sharing
+- **SharingTool** - Share spaces via email or DID
+- Delegation management
+- Revocation support
 
 ## Packages
 
@@ -31,6 +58,7 @@ Complete working examples are available in the `examples/` directory:
 - **[headless-auth](./examples/headless-auth/)** - Custom styling with headless components
 - **[styled-auth](./examples/styled-auth/)** - Pre-styled components with console-exact UI
 - **[iframe-auth](./examples/iframe-auth/)** - Embedded authentication in iframe context
+- **[space-management](./examples/space-management/)** - Complete space management with upload, file viewing, and sharing
 
 
 ## Development
@@ -47,6 +75,7 @@ pnpm build
 cd examples/headless-auth && pnpm dev
 cd examples/styled-auth && pnpm dev
 cd examples/iframe-auth && pnpm dev
+cd examples/space-management && pnpm dev
 ```
 
 ## License
