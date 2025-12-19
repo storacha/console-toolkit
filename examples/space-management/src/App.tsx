@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Provider, useW3, StorachaAuth } from '@storacha/console-toolkit-react'
 import {
   SpacePicker,
@@ -7,9 +7,13 @@ import {
   FileViewer,
   SharingTool,
   SpaceEnsurer,
+  UploadTool,
   useSpacePickerContext,
   useSharingToolContext,
   useSpaceCreatorContext,
+  useUploadToolContext,
+  useFileViewerContext,
+  UploadStatus,
 } from '@storacha/console-toolkit-react'
 import type { UnknownLink, Space } from '@storacha/ui-core'
 
@@ -182,7 +186,7 @@ function SharingView({ space, revokingEmails, setRevokingEmails }: {
 function SpaceManagementApp() {
   const [{ accounts }, { logout }] = useW3()
   const [{ selectedSpace }, { setSelectedSpace }] = useSpacePickerContext()
-  const [viewMode, setViewMode] = useState<'picker' | 'list' | 'viewer' | 'sharing' | 'creator'>('picker')
+  const [viewMode, setViewMode] = useState<'picker' | 'list' | 'viewer' | 'sharing' | 'creator' | 'upload'>('picker')
   const [selectedRoot, setSelectedRoot] = useState<UnknownLink | undefined>()
   const [revokingEmails, setRevokingEmails] = useState<Set<string>>(new Set())
 
@@ -234,22 +238,28 @@ function SpaceManagementApp() {
         >
           <span>➕</span> Create Space
         </button>
-        {selectedSpace && (
-          <>
-            <button 
-              onClick={() => setViewMode('list')}
-              className={`app-nav-button ${viewMode === 'list' ? 'active' : ''}`}
-            >
-              <span>📤</span> Upload
-            </button>
-            <button 
-              onClick={() => setViewMode('sharing')}
-              className={`app-nav-button ${viewMode === 'sharing' ? 'active' : ''}`}
-            >
-              <span>🔗</span> Share
-            </button>
-          </>
-        )}
+            {selectedSpace && (
+              <>
+                <button 
+                  onClick={() => setViewMode('upload')}
+                  className={`app-nav-button ${viewMode === 'upload' ? 'active' : ''}`}
+                >
+                  <span>📤</span> Upload
+                </button>
+                <button 
+                  onClick={() => setViewMode('list')}
+                  className={`app-nav-button ${viewMode === 'list' ? 'active' : ''}`}
+                >
+                  <span>📋</span> View Uploads
+                </button>
+                <button 
+                  onClick={() => setViewMode('sharing')}
+                  className={`app-nav-button ${viewMode === 'sharing' ? 'active' : ''}`}
+                >
+                  <span>🔗</span> Share
+                </button>
+              </>
+            )}
       </nav>
 
       <main className="app-main">
@@ -375,6 +385,12 @@ function SpaceManagementApp() {
                   {selectedSpace.access?.type === 'private' ? '🔒 Private' : '🌐 Public'}
                 </span>
               </div>
+              <button
+                onClick={() => setViewMode('upload')}
+                className="app-upload-file-button"
+              >
+                <span>📤</span> Upload a file
+              </button>
             </div>
             <SpaceList space={selectedSpace}>
               <SpaceList.List 
@@ -503,27 +519,7 @@ function SpaceManagementApp() {
                   )}
                 />
                 <div className="app-file-actions">
-                  <FileViewer.RemoveButton 
-                    removeShards={true}
-                    renderButton={(onClick, loading) => (
-                      <button
-                        className={`app-danger-button ${loading ? 'loading' : ''}`}
-                        onClick={onClick}
-                        disabled={loading}
-                      >
-                        {loading ? (
-                          <>
-                            <span className="app-spinner"></span>
-                            Removing...
-                          </>
-                        ) : (
-                          <>
-                            <span>🗑️</span>
-                            Remove File
-                          </>
-                        )}
-                      </button>
-                    )}
+                  <RemoveFileButton 
                     onRemove={() => {
                       setViewMode('list')
                       setSelectedRoot(undefined)
@@ -533,6 +529,10 @@ function SpaceManagementApp() {
               </div>
             </FileViewer>
           </div>
+        )}
+
+        {viewMode === 'upload' && selectedSpace && (
+          <UploadView space={selectedSpace} />
         )}
 
         {viewMode === 'sharing' && selectedSpace && (
@@ -546,6 +546,368 @@ function SpaceManagementApp() {
         )}
       </main>
     </div>
+  )
+}
+
+function UploadView({ space }: { space: Space }) {
+  const [isDragging, setIsDragging] = useState(false)
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+    // Files will be handled by UploadTool.Input
+  }, [])
+
+  const getUploadPrompt = () => {
+    return 'Drag File or Click to Browse' // Will be updated based on uploadType in component
+  }
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  }
+
+  const isPrivateSpace = space?.access?.type === 'private'
+
+  return (
+    <div className="app-section">
+      <div className="app-section-header">
+        <div className="app-space-header">
+          <div>
+            <h2>Upload to {space.name || 'Untitled Space'}</h2>
+            <p className="app-space-did">{space.did()}</p>
+          </div>
+          <span className={`app-space-badge ${isPrivateSpace ? 'private' : 'public'}`}>
+            {isPrivateSpace ? '🔒 Private' : '🌐 Public'}
+          </span>
+        </div>
+      </div>
+
+      <UploadTool space={space}>
+        <UploadViewContent 
+          isDragging={isDragging} 
+          onDragOver={handleDragOver} 
+          onDragLeave={handleDragLeave} 
+          onDrop={handleDrop} 
+          formatFileSize={formatFileSize} 
+        />
+      </UploadTool>
+    </div>
+  )
+}
+
+function UploadViewContent({ 
+  isDragging, 
+  onDragOver, 
+  onDragLeave, 
+  onDrop, 
+  formatFileSize 
+}: { 
+  isDragging: boolean
+  onDragOver: (e: React.DragEvent) => void
+  onDragLeave: (e: React.DragEvent) => void
+  onDrop: (e: React.DragEvent) => void
+  formatFileSize: (bytes: number) => string
+}) {
+  const [{ uploadType, file, files, status, wrapInDirectory, isPrivateSpace }, { setUploadType, setFiles, setWrapInDirectory, reset }] = useUploadToolContext()
+
+  const handleDropWithFiles = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    onDrop(e)
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setFiles([...e.dataTransfer.files])
+    }
+  }, [onDrop, setFiles])
+
+  const getUploadPrompt = () => {
+    switch (uploadType) {
+      case 'file':
+        return 'Drag File or Click to Browse'
+      case 'directory':
+        return 'Drag Directory or Click to Browse'
+      case 'car':
+        return 'Drag CAR or Click to Browse'
+      default:
+        return 'Drag File or Click to Browse'
+    }
+  }
+
+  return (
+    <UploadTool.Form
+      renderContainer={(children) => (
+        <div className="app-upload-form-container">
+          {children}
+        </div>
+      )}
+    >
+      {!isPrivateSpace && (
+        <div className="app-upload-type-selector">
+          <h3 className="app-upload-section-title">Type</h3>
+          <UploadTool.TypeSelector
+            renderOption={(type, checked, onChange) => (
+              <label className={`app-upload-type-option ${checked ? 'selected' : ''}`}>
+                <input
+                  type="radio"
+                  checked={checked}
+                  onChange={onChange}
+                  className="app-radio-input"
+                />
+                <span className="app-upload-type-label">
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </span>
+              </label>
+            )}
+          />
+        </div>
+      )}
+
+      <div
+        className={`app-upload-dropzone ${isDragging ? 'dragging' : ''} ${file ? 'has-file' : ''}`}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={handleDropWithFiles}
+      >
+        {!file && (
+          <>
+            <div className="app-upload-dropzone-icon">📁</div>
+            <UploadTool.Input
+              className="app-upload-input"
+              allowDirectory={uploadType === 'directory'}
+            />
+            <p className="app-upload-dropzone-text">{getUploadPrompt()}</p>
+          </>
+        )}
+        <UploadTool.Status
+          renderIdle={(file, files) => {
+            if (!file) return null
+            return (
+              <div className="app-upload-file-preview">
+                <div className="app-upload-file-info">
+                  <div className="app-upload-file-icon">📄</div>
+                  <div className="app-upload-file-details">
+                    <div className="app-upload-file-name">{file.name}</div>
+                    <div className="app-upload-file-size">{formatFileSize(file.size)}</div>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="app-upload-submit-button"
+                  disabled={!file}
+                >
+                  <span>☁️</span> Start Upload
+                </button>
+              </div>
+            )
+          }}
+          renderUploading={(file, progress, shards) => (
+            <div className="app-upload-progress-container">
+              <h3 className="app-upload-progress-title">Uploading {file?.name}</h3>
+              <UploadTool.Progress
+                renderProgress={(progress, shards) => (
+                  <div className="app-upload-progress">
+                    {Object.values(progress).map((p, index) => {
+                      const { total, loaded, lengthComputable } = p
+                      const percent = lengthComputable && total > 0 ? Math.floor((loaded / total) * 100) : 0
+                      return (
+                        <div key={index} className="app-upload-progress-bar-container">
+                          <div className="app-upload-progress-bar">
+                            <div
+                              className="app-upload-progress-bar-fill"
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
+                          {lengthComputable && (
+                            <div className="app-upload-progress-text">{percent}%</div>
+                          )}
+                        </div>
+                      )
+                    })}
+                    {shards.map((shard, index) => (
+                      <div key={index} className="app-upload-shard-info">
+                        Shard {shard.cid.toString()} ({formatFileSize(shard.size)}) uploaded
+                      </div>
+                    ))}
+                  </div>
+                )}
+              />
+            </div>
+          )}
+          renderSucceeded={(dataCID, file) => (
+            <div className="app-upload-success">
+              <h3 className="app-upload-success-title">✅ Uploaded Successfully!</h3>
+              {dataCID && (
+                <div className="app-upload-success-cid">
+                  <label className="app-upload-success-label">Root CID:</label>
+                  <code className="app-upload-success-code">{dataCID.toString()}</code>
+                </div>
+              )}
+              <button
+                className="app-upload-another-button"
+                onClick={() => {
+                  reset()
+                }}
+              >
+                <span>➕</span> Upload Another
+              </button>
+            </div>
+          )}
+          renderFailed={(error) => (
+            <div className="app-upload-error">
+              <h3 className="app-upload-error-title">⚠️ Upload Failed</h3>
+              <p className="app-upload-error-message">{error?.message || 'Unknown error occurred'}</p>
+              <button
+                className="app-upload-retry-button"
+                onClick={() => {
+                  reset()
+                }}
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+        />
+      </div>
+
+      {!isPrivateSpace && uploadType === 'file' && (
+        <div className="app-upload-options">
+          <h3 className="app-upload-section-title">Options</h3>
+          <label className="app-upload-wrap-option">
+            <UploadTool.WrapCheckbox />
+            <span className="app-upload-wrap-label">Wrap In Directory</span>
+          </label>
+        </div>
+      )}
+    </UploadTool.Form>
+  )
+}
+
+function RemoveFileButton({ onRemove }: { onRemove: () => void }) {
+  const [{ root, upload, isLoading }, { remove }] = useFileViewerContext()
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [removing, setRemoving] = useState(false)
+
+  const handleRemoveClick = useCallback(() => {
+    setShowConfirm(true)
+  }, [])
+
+  const handleConfirmRemove = useCallback(async () => {
+    if (!root) return
+    
+    try {
+      setRemoving(true)
+      await remove({ shards: true })
+      setShowConfirm(false)
+      onRemove()
+    } catch (err) {
+      console.error('Failed to remove file:', err)
+      alert('Failed to remove file. Please try again.')
+    } finally {
+      setRemoving(false)
+    }
+  }, [root, remove, onRemove])
+
+  const handleCancel = useCallback(() => {
+    setShowConfirm(false)
+  }, [])
+
+  if (showConfirm) {
+    const shards = upload?.shards || []
+    
+    return (
+      <div className="app-remove-confirm-overlay">
+        <div className="app-remove-confirm-dialog">
+          <h3 className="app-remove-confirm-title">Confirm remove</h3>
+          <p className="app-remove-confirm-message">
+            Are you sure you want to remove <code className="app-remove-confirm-cid">{root?.toString()}</code>?
+          </p>
+          
+          {shards.length > 0 && (
+            <div className="app-remove-confirm-shards">
+              <p className="app-remove-confirm-shards-title">The following shards will be removed:</p>
+              <div className="app-remove-confirm-shards-list">
+                <div className="app-remove-confirm-shard-item">
+                  <span className="app-remove-confirm-shard-label">ROOT CID</span>
+                  <code className="app-remove-confirm-shard-cid">{root?.toString()}</code>
+                </div>
+                {shards.map((shard, index) => (
+                  <div key={shard.toString()} className="app-remove-confirm-shard-item">
+                    <span className="app-remove-confirm-shard-label">Shard {index + 1}</span>
+                    <code className="app-remove-confirm-shard-cid">{shard.toString()}</code>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <p className="app-remove-confirm-warning">
+            Any uploads using the same shards as those listed above will be corrupted. This cannot be undone.
+          </p>
+          
+          <div className="app-remove-confirm-actions">
+            <button
+              className="app-remove-confirm-cancel-button"
+              onClick={handleCancel}
+              disabled={removing}
+            >
+              Cancel
+            </button>
+            <button
+              className="app-remove-confirm-remove-button"
+              onClick={handleConfirmRemove}
+              disabled={removing}
+            >
+              {removing ? (
+                <>
+                  <span className="app-spinner"></span>
+                  Removing...
+                </>
+              ) : (
+                'Remove'
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <FileViewer.RemoveButton 
+      removeShards={true}
+      renderButton={(onClick, loading) => (
+        <button
+          className={`app-danger-button ${loading ? 'loading' : ''}`}
+          onClick={handleRemoveClick}
+          disabled={loading || isLoading}
+        >
+          {loading ? (
+            <>
+              <span className="app-spinner"></span>
+              Removing...
+            </>
+          ) : (
+            <>
+              <span>🗑️</span>
+              Remove File
+            </>
+          )}
+        </button>
+      )}
+      onRemove={onRemove}
+    />
   )
 }
 

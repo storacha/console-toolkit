@@ -208,7 +208,7 @@ export const SpaceCreatorProvider = ({
           },
         } as any)
 
-        const provider = toWebDID(providerDID) ?? toWebDID('did:web:web3.storage')!
+        const provider = toWebDID(providerDID) ?? toWebDID('did:web:storacha.network')!
         if (!provider) {
           const err = new Error('Failed to resolve provider DID')
           setError(err.message)
