@@ -7,6 +7,9 @@ function App() {
     console.log('🔐 Dmail Auth Event:', event, properties)
   }
 
+  // const storachaService = { did: () => 'did:web:storacha.network' as const }
+  // const storachaConnection = { url: new URL('https://api.storacha.network') }
+
   return (
     <Provider>
       <StorachaAuth
