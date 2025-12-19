@@ -7,6 +7,9 @@ function App() {
     console.log('🌐 Web3Mail Auth Event:', event, properties)
   }
 
+  // const storachaService = { did: () => 'did:web:storacha.network' as const }
+  // const storachaConnection = { url: new URL('https://api.storacha.network') }
+
   return (
     <Provider>
       <StorachaAuth
@@ -20,11 +23,6 @@ function App() {
           renderSubmitted={() => <Web3MailSubmitted />}
         >
           <AuthenticatedContent />
-          {/* <SpaceEnsurer>
-            <SpacePicker>
-              <SpaceManagementApp />
-            </SpacePicker>
-          </SpaceEnsurer> */}
         </StorachaAuth.Ensurer>
       </StorachaAuth>
     </Provider>

@@ -8,12 +8,14 @@ import {
   SpaceList,
   FileViewer,
   SharingTool,
+  UploadTool,
   useSpacePickerContext,
   useSpaceCreatorContext,
   useSpaceListContext,
   useFileViewerContext,
   useSharingToolContext,
 } from '../../../../packages/react/src/index'
+import { Web3MailUploadTool } from './Web3MailUploadTool'
 
 type SpaceT = ReturnType<typeof useSpacePickerContext>[0]['spaces'][number]
 
@@ -250,6 +252,109 @@ function UploadsStatus() {
   return <div className="space-inline-error">{error}</div>
 }
 
+function UploadPanel({
+  space,
+  onUploaded,
+}: {
+  space: SpaceT | undefined
+  onUploaded: (cid?: UnknownLink) => void
+}) {
+  if (!space) {
+    return (
+      <div className="space-card-3d">
+        <div className="space-card-header">
+          <h3 className="space-card-title">Upload</h3>
+          <p className="space-card-subtitle">Pick a space to start uploading.</p>
+        </div>
+        <div className="space-empty">Select a space to enable uploads.</div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-card-3d">
+      <div className="space-card-header">
+        <h3 className="space-card-title">Upload to {space.name || 'this space'}</h3>
+        <p className="space-card-subtitle">Upload files, directories, or CARs. Private spaces only allow file uploads.</p>
+      </div>
+
+      <UploadTool
+        space={space as any}
+        onUploadComplete={({ dataCID }) => {
+          if (dataCID) onUploaded(dataCID as any)
+        }}
+      >
+        <UploadTool.Form className="space-form">
+          <div className="space-field">
+            <label className="space-label">Upload type</label>
+            <UploadTool.TypeSelector
+              className="upload-type-options"
+              renderOption={(type, checked, onChange) => (
+                <button
+                  type="button"
+                  className={`space-pill-option ${checked ? 'is-selected' : ''}`}
+                  onClick={onChange}
+                >
+                  {type === 'car' ? 'CAR' : type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              )}
+            />
+          </div>
+
+          <div className="space-field">
+            <label className="space-label" htmlFor="upload-input">
+              Select files
+            </label>
+            <UploadTool.Input id="upload-input" className="space-input" multiple />
+            <UploadTool.WrapCheckbox
+              className="space-checkbox"
+              renderCheckbox={(checked, toggle) => (
+                <label className="space-wrap-toggle">
+                  <input type="checkbox" checked={checked} onChange={toggle} />
+                  <span>Wrap single file in directory</span>
+                </label>
+              )}
+            />
+            <div className="space-help">
+              Use CAR for pre-built DAGs. Directories and multiple files are uploaded as a folder.
+            </div>
+          </div>
+
+          <button className="space-primary-btn" type="submit">
+            Upload
+          </button>
+        </UploadTool.Form>
+
+        <UploadTool.Progress className="upload-progress" />
+
+        <UploadTool.Status
+          renderIdle={(_file, files) => (
+            <div className="space-help">
+              {files?.length
+                ? `${files.length} item${files.length > 1 ? 's' : ''} ready to upload.`
+                : 'Choose files or a directory to upload.'}
+            </div>
+          )}
+          renderUploading={(_file, progress, shards) => (
+            <div className="space-help">
+              Uploading {Object.keys(progress).length || 1} transfer{Object.keys(progress).length === 1 ? '' : 's'}...
+              {shards.length ? ` Shards stored: ${shards.length}` : ''}
+            </div>
+          )}
+          renderSucceeded={(dataCID) => (
+            <div className="space-inline-success">
+              Upload complete: <code className="code-chip">{dataCID?.toString() || 'Unknown CID'}</code>
+            </div>
+          )}
+          renderFailed={(err) => (
+            <div className="space-inline-error">{err?.message || 'Upload failed. Try again.'}</div>
+          )}
+        />
+      </UploadTool>
+    </div>
+  )
+}
+
 function UploadRow({ root, insertedAt }: { root: UnknownLink; insertedAt?: string }) {
   const short = useMemo(() => {
     const s = root.toString()
@@ -398,6 +503,7 @@ function SharedRow({ item }: { item: { email: string; capabilities: string[]; de
 export function Web3MailSpaces() {
   const [activeSpace, setActiveSpace] = useState<SpaceT | undefined>(undefined)
   const [selectedRoot, setSelectedRoot] = useState<UnknownLink | undefined>(undefined)
+  const [showUploadTool, setShowUploadTool] = useState(false)
 
   useEffect(() => {
     setSelectedRoot(undefined)
@@ -411,6 +517,13 @@ export function Web3MailSpaces() {
     setSelectedRoot(undefined)
   }
 
+  const openAdvancedUpload = () => {
+    setShowUploadTool(true)
+    setTimeout(() => {
+      document.getElementById('web3mail-upload-tool')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
+  }
+
   return (
     <section className="space-demo">
       <SpaceEnsurer
@@ -418,11 +531,27 @@ export function Web3MailSpaces() {
         renderCreator={() => <SpaceCreatorCard />}
       >
         <SpacePicker onSpaceSelect={(s) => setActiveSpace(s as SpaceT)}>
+          <div className="space-toolbar space-upload-launch">
+            <div className="space-help">
+              {activeSpace ? `Uploading to: ${activeSpace.name || activeSpace.did()}` : 'Select a space to upload.'}
+            </div>
+            <button className="space-secondary-btn" type="button" onClick={openAdvancedUpload}>
+              Open Advanced Upload
+            </button>
+          </div>
           <div className="space-grid">
             <SpacePickerPanel onSpaceChange={(s) => setActiveSpace(s)} />
             <SharingPanel space={activeSpace} />
+            <UploadPanel space={activeSpace} onUploaded={(cid) => setSelectedRoot(cid)} />
             <UploadsPanel space={activeSpace} onSelectRoot={onSelectRoot} />
             <FileViewerPanel space={activeSpace} root={selectedRoot} onCleared={clearRoot} />
+            {showUploadTool && (
+              <Web3MailUploadTool
+                space={activeSpace}
+                onUploaded={(cid) => setSelectedRoot(cid as any)}
+                onClose={() => setShowUploadTool(false)}
+              />
+            )}
           </div>
         </SpacePicker>
       </SpaceEnsurer>
