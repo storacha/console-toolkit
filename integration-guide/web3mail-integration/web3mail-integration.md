@@ -1,88 +1,112 @@
 # Web3Mail Integration Example
 
-This example demonstrates how to integrate Storacha Console Toolkit with Web3Mail(eg Ether Mail) for decentralized email communication and file sharing.
+This example demonstrates how to integrate Storacha Console Toolkit with Web3Mail (EtherMail) for decentralized email authentication, space management, and file storage.
 
 ## Overview
 
 Web3Mail integration provides:
-- **Decentralized Authentication**: Web3 wallet-based authentication
-- **Encrypted Communication**: End-to-end encrypted email via Web3Mail
-- **File Sharing**: Secure file storage with Web3Mail integration
-- **Privacy-First**: No central authority, fully decentralized
+- **Web3Mail Authentication**: Email-based authentication with EtherMail addresses (@ethmail.cc, @ethermail.io)
+- **Space Management**: Create, list, and manage decentralized storage spaces
+- **File Upload**: Upload files with drag-and-drop support and progress tracking
+- **File Sharing**: Share spaces with others via email or DID
+- **File Viewing**: View uploaded files with CID, gateway URLs, and shard information
 
 ## Quick Start
 
+### Prerequisites
+
+- Node.js 18+ and pnpm installed
+- Built console-toolkit packages (run `pnpm -r build` from console-toolkit root)
+
+### Installation
+
 ```bash
-# Navigate to the integration example
+# From console-toolkit root directory
 cd integration-guide/web3mail-integration
 
-# Install dependencies (from console-toolkit root)
+# Install dependencies
 pnpm install
 
+# Build toolkit packages (if not already built)
+cd ../..
+pnpm -r build
+cd integration-guide/web3mail-integration
+```
+
+### Run
+
+```bash
 # Start development server
 pnpm dev
+
+# The app will be available at http://localhost:3002
 ```
 
 ## Implementation
 
-This example demonstrates how to integrate Storacha Console Toolkit Auth components with Web3Mail services. The implementation uses:
+### Architecture
 
-- **`@storacha/console-toolkit-react-styled`**: Pre-styled authentication components
-- **`@storacha/console-toolkit-react`**: Core authentication hooks and providers
-- **`StorachaAuth.Ensurer`**: Handles authentication flow and state management
-
-### 1. Web3Mail Authentication Setup
-
-The authentication is handled using `StorachaAuth.Ensurer` which automatically manages the authentication flow:
+The integration follows the StorachaAuth → SpaceEnsurer → SpacePicker flow:
 
 ```typescript
-import { Provider } from '@storacha/console-toolkit-react'
-import { StorachaAuth, useStorachaAuth } from '@storacha/console-toolkit-react-styled'
-
-function App() {
-  return (
-    <Provider>
-      <StorachaAuth
-        onAuthEvent={handleAuthEvent}
-        enableIframeSupport={true}
-      >
-        <StorachaAuth.Ensurer
-          renderForm={() => <Web3MailAuthForm />}
-        >
+<Provider>
+  <StorachaAuth>
+    <StorachaAuth.Ensurer>
+      <SpaceEnsurer>
+        <SpacePicker>
           <AuthenticatedContent />
-        </StorachaAuth.Ensurer>
-      </StorachaAuth>
-    </Provider>
-  )
-}
+        </SpacePicker>
+      </SpaceEnsurer>
+    </StorachaAuth.Ensurer>
+  </StorachaAuth>
+</Provider>
 ```
 
-The `Web3MailAuthForm` component uses the `useStorachaAuth` hook to access authentication state and actions, providing a seamless authentication experience.
+### Key Components
 
-### 2. Web3Mail File Upload Component[upcoming]
+#### 1. Authentication (`Web3MailAuth.tsx`)
 
-After authentication, users can upload files using the `Web3MailFileUpload` component, which integrates with Storacha storage and includes optional end-to-end encryption settings for secure file sharing.
+- Validates Web3Mail email addresses (@ethmail.cc, @ethermail.io)
+- Uses `StorachaAuth.Ensurer` for authentication flow
+- Custom styled authentication forms with Web3Mail branding
 
-### 3. Web3Mail Share Component[upcoming]
+#### 2. Space Management (`Web3MailSpaces.tsx`)
 
-The `Web3MailShare` component allows authenticated users to share uploaded files via Web3Mail, with support for wallet address-based sharing and optional encryption.
+Tab-based interface with:
+- **Spaces Tab**: List and search all spaces
+- **Create Space Tab**: Create new public or private spaces
+- **Upload Tab**: Upload files to selected space
+- **View Uploads Tab**: List all uploads in a space
+- **File Viewer Tab**: View file details (CID, gateway URL, shards)
+- **Share Tab**: Share space access via email or DID
 
+#### 3. Upload Tool (`Web3MailUploadTool.tsx`)
 
-## Features[Change as implemented]
+- Drag-and-drop file upload
+- Support for files, directories, and CAR files
+- Real-time upload progress
+- File preview before upload
 
-### ✅ Implemented Features
+### Configuration
 
-- **Web3(EtherMail) Wallet Authentication**: MetaMask, WalletConnect, and other wallet support
-<!-- - **Decentralized File Upload**: Upload files to Storacha with Web3Mail integration
-- **End-to-End Encryption**: Optional encryption for file sharing
-- **Progress Tracking**: Real-time upload progress display -->
+Default provider settings:
 
-## Contributing
+```typescript
+const DEFAULT_GATEWAY_HOST = 'https://w3s.link'
+const DEFAULT_GATEWAY_DID = 'did:web:w3s.link'
+const DEFAULT_PROVIDER_DID = 'did:web:storacha.network'
+```
 
-- contributions are highly encouraged.
+## Features
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/web3mail-enhancement`
-3. Commit changes: `git commit -am 'Add Web3Mail enhancement'`
-4. Push to branch: `git push origin feature/web3mail-enhancement`
-5. Submit a pull request
+### ✅ Implemented
+
+- **Web3Mail Email Authentication**: Validates and authenticates with EtherMail addresses
+- **Space Creation**: Create public or private spaces with custom names
+- **Space Listing**: Search and filter spaces by name or DID
+- **File Upload**: Drag-and-drop uploads with progress tracking
+- **Upload Management**: View all uploads with metadata (CID, date)
+- **File Viewer**: Display file details including root CID, gateway URL, and shards
+- **Space Sharing**: Share spaces with email addresses or DIDs
+- **Access Control**: Public and private space support
+- **Error Handling**: Comprehensive error messages with user guidance

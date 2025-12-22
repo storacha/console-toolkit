@@ -1,14 +1,18 @@
-import { Provider } from '../../../packages/react/src/providers/Provider'
-import { StorachaAuth } from '../../../packages/react/src/components/StorachaAuth'
+import { Provider, StorachaAuth, SpaceEnsurer, SpacePicker } from '@storacha/console-toolkit-react'
 import { Web3MailAuthForm, AuthenticatedContent, Web3MailSubmitted } from './components/Web3MailAuth'
+
+function AuthenticatedApp() {
+  return (
+    <SpacePicker>
+      <AuthenticatedContent />
+    </SpacePicker>
+  )
+}
 
 function App() {
   const handleAuthEvent = (event: string, properties?: Record<string, any>) => {
     console.log('🌐 Web3Mail Auth Event:', event, properties)
   }
-
-  // const storachaService = { did: () => 'did:web:storacha.network' as const }
-  // const storachaConnection = { url: new URL('https://api.storacha.network') }
 
   return (
     <Provider>
@@ -22,7 +26,9 @@ function App() {
           renderForm={() => <Web3MailAuthForm />}
           renderSubmitted={() => <Web3MailSubmitted />}
         >
-          <AuthenticatedContent />
+          <SpaceEnsurer renderNoSpaces={() => <AuthenticatedApp />}>
+            <AuthenticatedApp />
+          </SpaceEnsurer>
         </StorachaAuth.Ensurer>
       </StorachaAuth>
     </Provider>

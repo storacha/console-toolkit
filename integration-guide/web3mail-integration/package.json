@@ -9,8 +9,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@storacha/console-toolkit-react-styled": "workspace:*",
     "@storacha/console-toolkit-react": "workspace:*",
+    "@storacha/console-toolkit-react-styled": "workspace:*",
     "@storacha/ui-core": "^2.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

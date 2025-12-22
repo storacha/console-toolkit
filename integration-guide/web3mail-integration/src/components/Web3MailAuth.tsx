@@ -1,5 +1,5 @@
 import { useState, useEffect, FormEvent } from 'react'
-import { useStorachaAuth, StorachaAuth } from '../../../../packages/react/src/index'
+import { useStorachaAuth, StorachaAuth } from '@storacha/console-toolkit-react'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { Web3MailSpaces } from './Web3MailSpaces'
@@ -13,7 +13,7 @@ export function Web3MailSubmitted() {
       <div
         className="web3mail-submitted-container"
         style={{
-          background: `#EFE3F3 url(/racha-fire.jpg) bottom left`,
+          background: `#EFE3F3 url(../../../packages/react-styled/src/assets/racha-fire.jpg) bottom left`,
           backgroundSize: '100% auto',
           backgroundPosition: 'bottom',
           backgroundRepeat: 'no-repeat',
@@ -21,7 +21,7 @@ export function Web3MailSubmitted() {
       >
         <div className="web3mail-submitted-card">
           <div className="web3mail-submitted-logo-container">
-            <img src="/storacha-logo.svg" alt="Storacha" className="web3mail-submitted-logo" />
+            <img src="../../../packages/react-styled/src/assets/storacha-logo.svg" alt="Storacha" className="web3mail-submitted-logo" />
           </div>
 
           <div className="web3mail-submitted-content">
