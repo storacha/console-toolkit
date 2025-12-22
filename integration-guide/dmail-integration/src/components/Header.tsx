@@ -1,3 +1,5 @@
+import { storachaLogoUrl } from '../../../../packages/react-styled/src/assets/index'
+
 export function Header() {
     return (
         <header className="app-header authenticated-header">
@@ -9,7 +11,7 @@ export function Header() {
                 <div className="divider-3d">×</div>
                 <div className="logo-wrapper-3d storacha-logo-3d">
                     <div className="logo-glow"></div>
-                    <img src="/storacha-logo.svg" alt="Storacha" className="logo-img-3d" />
+                    <img src={storachaLogoUrl} alt="Storacha" className="logo-img-3d" />
                 </div>
             </div>
 

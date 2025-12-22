@@ -1,94 +1,111 @@
 # Dmail Integration Example
 
-This example demonstrates how to integrate Storacha Console Toolkit with Dmail for email-based authentication and file sharing.
+This example demonstrates how to integrate Storacha Console Toolkit with Dmail for email-based authentication, space management, and file storage.
 
 ## Overview
 
 Dmail integration provides:
-- **Email Authentication**: Seamless login using Dmail email addresses
-- **File Sharing**: Send files via Dmail with Storacha storage
-- **Encrypted Storage**: Secure file storage with Dmail integration
-- **Zero Navigation**: Embedded iframe experience
-
-## Live Demo
-
---
+- **Dmail Authentication**: Email-based authentication with Dmail addresses (@dmail.ai)
+- **Space Management**: Create, list, and manage decentralized storage spaces
+- **File Upload**: Upload files with drag-and-drop support and progress tracking
+- **File Sharing**: Share spaces with others via email or DID
+- **File Viewing**: View uploaded files with CID, gateway URLs, and shard information
 
 ## Quick Start
 
+### Prerequisites
+
+- Node.js 18+ and pnpm installed
+- Built console-toolkit packages (run `pnpm -r build` from console-toolkit root)
+
+### Installation
+
 ```bash
-# Navigate to the integration example
+# From console-toolkit root directory
 cd integration-guide/dmail-integration
 
-# Install dependencies (from console-toolkit root)
+# Install dependencies
 pnpm install
 
+# Build toolkit packages (if not already built)
+cd ../..
+pnpm -r build
+cd integration-guide/dmail-integration
+```
+
+### Run
+
+```bash
 # Start development server
 pnpm dev
+
+# The app will be available at http://localhost:3001
 ```
 
 ## Implementation
 
-This example demonstrates how to integrate Storacha Console Toolkit Auth components with Dmail services. The implementation uses:
+### Architecture
 
-- **`@storacha/console-toolkit-react-styled`**: Pre-styled authentication components
-- **`@storacha/console-toolkit-react`**: Core authentication hooks and providers
-- **`StorachaAuth.Ensurer`**: Handles authentication flow and state management
-
-### 1. Dmail Authentication Setup
-
-The authentication is handled using `StorachaAuth.Ensurer` which automatically manages the authentication flow:
+The integration uses StorachaAuth for authentication:
 
 ```typescript
-import { Provider } from '@storacha/console-toolkit-react'
-import { StorachaAuth, useStorachaAuth } from '@storacha/console-toolkit-react-styled'
-
-function App() {
-  return (
-    <Provider>
-      <StorachaAuth
-        onAuthEvent={handleAuthEvent}
-        enableIframeSupport={true}
-      >
-        <StorachaAuth.Ensurer
-          renderForm={() => <DmailAuthForm />}
-        >
-          <AuthenticatedContent />
-        </StorachaAuth.Ensurer>
-      </StorachaAuth>
-    </Provider>
-  )
-}
+<Provider>
+  <StorachaAuth>
+    <StorachaAuth.Ensurer>
+      <AuthenticatedContent />
+    </StorachaAuth.Ensurer>
+  </StorachaAuth>
+</Provider>
 ```
 
-The `DmailAuthForm` component validates that users authenticate with a Dmail email address (@dmail.ai) and uses the `useStorachaAuth` hook to access authentication state and actions.
+### Key Components
 
-### 2. File Upload with Dmail Integration[upcoming]
+#### 1. Authentication (`DmailAuth.tsx`)
 
-After authentication, users can upload files using the `DmailFileUpload` component, which integrates with Storacha storage and prepares files for sharing via Dmail.
+- Validates Dmail email addresses (@dmail.ai)
+- Uses `StorachaAuth.Ensurer` for authentication flow
+- Custom styled authentication forms with Dmail branding
+- Iframe support for embedded experiences
 
-### 3. Dmail Share Component[upcoming]
+#### 2. Space Management (`DmailSpaces.tsx`)
 
-The `DmailShare` component allows authenticated users to share uploaded files via Dmail, sending notifications with file links to recipients.
+Comprehensive space management interface with:
+- **Space Creation**: Create new public or private spaces
+- **Space Listing**: View and search all spaces
+- **Upload Tool**: Upload files to selected space
+- **Upload List**: View all uploads in a space with pagination
+- **File Viewer**: View file details (CID, gateway URL, shards)
+- **Sharing Tool**: Share space access via email or DID
+
+#### 3. Upload Tool (`DmailUploadTool.tsx`)
+
+- Drag-and-drop file upload
+- Support for files, directories, and CAR files
+- Real-time upload progress with progress bars
+- File preview before upload
+- Error handling and retry functionality
+
+### Configuration
+
+Default provider settings (can be customized):
+
+```typescript
+const DEFAULT_GATEWAY_HOST = 'https://w3s.link'
+const DEFAULT_GATEWAY_DID = 'did:web:w3s.link'
+const DEFAULT_PROVIDER_DID = 'did:web:web3.storage'
+```
 
 ## Features
 
-### ✅ Implemented Features
+### ✅ Implemented
 
-- **Dmail Authentication**: Email-based login with Dmail validation
-
-
-### 🚀 Coming Soon
-
-- **File Upload**: Drag & drop file upload with Storacha storage
-- **Dmail Integration**: Send files via Dmail with share URLs
-- **Progress Tracking**: Real-time upload progress display
-- **Batch File Sharing**: Share multiple files at once
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/dmail-enhancement`
-3. Commit changes: `git commit -am 'Add Dmail enhancement'`
-4. Push to branch: `git push origin feature/dmail-enhancement`
-5. Submit a pull request
+- **Dmail Email Authentication**: Validates and authenticates with Dmail addresses (@dmail.ai)
+- **Space Creation**: Create public or private spaces with custom names
+- **Space Listing**: View and search spaces by name or DID
+- **File Upload**: Drag-and-drop uploads with progress tracking
+- **Upload Management**: View all uploads with metadata (CID, date, pagination)
+- **File Viewer**: Display file details including root CID, gateway URL, and shards
+- **Space Sharing**: Share spaces with email addresses or DIDs
+- **Access Control**: Public and private space support
+- **Error Handling**: Comprehensive error messages with user guidance
+- **Iframe Support**: Embedded experience support for Dmail integration

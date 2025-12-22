@@ -14,15 +14,14 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
-  },
-  "include": ["src"],
-  "references": [
-    {
-      "path": "../../packages/react"
-    },
-    {
-      "path": "./tsconfig.node.json"
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@storacha/console-toolkit-react": ["../../packages/react/src/index.ts"],
+      "@storacha/console-toolkit-react/*": ["../../packages/react/src/*"],
+      "@storacha/console-toolkit-react-styled": ["../../packages/react-styled/src/index.ts"],
+      "@storacha/console-toolkit-react-styled/*": ["../../packages/react-styled/src/*"]
     }
-  ]
+  },
+  "include": ["src"]
 }

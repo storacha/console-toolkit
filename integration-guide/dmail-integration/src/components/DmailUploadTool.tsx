@@ -4,7 +4,7 @@ import {
   UploadTool,
   useUploadToolContext,
   UploadStatus,
-} from '../../../../packages/react/src/components/upload'
+} from '@storacha/console-toolkit-react'
 
 type UploadToolProps = {
   space?: { name?: string; did: () => string; access?: { type?: string } }

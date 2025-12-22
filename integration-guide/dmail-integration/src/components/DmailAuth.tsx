@@ -1,5 +1,5 @@
 import { useState, useEffect, FormEvent } from 'react'
-import { useStorachaAuth, StorachaAuth } from '../../../../packages/react/src/index'
+import { useStorachaAuth, StorachaAuth } from '@storacha/console-toolkit-react'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { DmailSpaces } from './DmailSpaces'
@@ -12,7 +12,7 @@ export function DmailSubmitted() {
       <div
         className="dmail-submitted-container"
         style={{
-          background: `#EFE3F3 url(/racha-fire.jpg) bottom left`,
+          background: `#EFE3F3 url(../../../packages/react-styled/src/assets/racha-fire.jpg) bottom left`,
           backgroundSize: '100% auto',
           backgroundPosition: 'bottom',
           backgroundRepeat: 'no-repeat',
@@ -20,7 +20,7 @@ export function DmailSubmitted() {
       >
         <div className="dmail-submitted-card">
           <div className="dmail-submitted-logo-container">
-            <img src="/storacha-logo.svg" alt="Storacha" className="dmail-submitted-logo" />
+          <img src="../../../packages/react-styled/src/assets/storacha-logo.svg" alt="Storacha" className="dmail-submitted-logo" />
           </div>
 
           <div className="dmail-submitted-content">

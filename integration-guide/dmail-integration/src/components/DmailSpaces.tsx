@@ -14,14 +14,14 @@ import {
   useSpaceListContext,
   useFileViewerContext,
   useSharingToolContext,
-} from '../../../../packages/react/src/index'
+} from '@storacha/console-toolkit-react'
 import { DmailUploadTool } from './DmailUploadTool'
 
 type SpaceT = ReturnType<typeof useSpacePickerContext>[0]['spaces'][number]
 
 const DEFAULT_GATEWAY_HOST = 'https://w3s.link'
 const DEFAULT_GATEWAY_DID = 'did:web:w3s.link'
-const DEFAULT_PROVIDER_DID = 'did:web:storacha.network'
+const DEFAULT_PROVIDER_DID = 'did:web:web3.storage'
 
 function SpaceCreatorCard() {
   return (
@@ -93,7 +93,7 @@ function CreatorStatus() {
   return null
 }
 
-function SpacePickerPanel({ onSpaceChange }: { onSpaceChange: (space: SpaceT) => void }) {
+function SpacePickerPanel() {
   const [{ spaces, selectedSpace, query, publicSpaces, privateSpaces }, { setSelectedSpace }] = useSpacePickerContext()
 
   useEffect(() => {
@@ -101,12 +101,6 @@ function SpacePickerPanel({ onSpaceChange }: { onSpaceChange: (space: SpaceT) =>
       setSelectedSpace(spaces[0])
     }
   }, [selectedSpace, spaces, setSelectedSpace])
-
-  useEffect(() => {
-    if (selectedSpace) {
-      onSpaceChange(selectedSpace)
-    }
-  }, [selectedSpace, onSpaceChange])
 
   const hasQuery = query.trim().length > 0
 
@@ -335,6 +329,18 @@ function FileViewerContent({ onCleared }: { onCleared: () => void }) {
 }
 
 function SharingPanel({ space }: { space: SpaceT | undefined }) {
+  if (!space) {
+    return (
+      <div className="space-card-3d">
+        <div className="space-card-header">
+          <h3 className="space-card-title">Share Space</h3>
+          <p className="space-card-subtitle">Select a space to enable sharing.</p>
+        </div>
+        <div className="space-empty">Pick a space to share access.</div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-card-3d">
       <div className="space-card-header">
@@ -342,7 +348,7 @@ function SharingPanel({ space }: { space: SpaceT | undefined }) {
         <p className="space-card-subtitle">Share by email (sends authorization) or by DID (downloads delegation).</p>
       </div>
 
-      <SharingTool space={space as any}>
+      <SharingTool key={space.did()} space={space as any}>
         <SharingTool.Form
           className="space-form"
           renderInput={() => (
@@ -397,21 +403,8 @@ function SharedRow({ item }: { item: { email: string; capabilities: string[]; de
 }
 
 export function DmailSpaces() {
-  const [activeSpace, setActiveSpace] = useState<SpaceT | undefined>(undefined)
   const [selectedRoot, setSelectedRoot] = useState<UnknownLink | undefined>(undefined)
   const [showUploadTool, setShowUploadTool] = useState(false)
-
-  useEffect(() => {
-    setSelectedRoot(undefined)
-  }, [activeSpace?.did()])
-
-  const onSelectRoot = (root: UnknownLink) => {
-    setSelectedRoot(root)
-  }
-
-  const clearRoot = () => {
-    setSelectedRoot(undefined)
-  }
 
   const openAdvancedUpload = () => {
     setShowUploadTool(true)
@@ -426,32 +419,73 @@ export function DmailSpaces() {
         renderNoSpaces={() => <SpaceCreatorCard />}
         renderCreator={() => <SpaceCreatorCard />}
       >
-        <SpacePicker onSpaceSelect={(s) => setActiveSpace(s as SpaceT)}>
-          <div className="space-toolbar space-upload-launch">
-            <div className="space-help">
-              {activeSpace ? `Uploading to: ${activeSpace.name || activeSpace.did()}` : 'Select a space to upload.'}
-            </div>
-            <button className="space-secondary-btn" type="button" onClick={openAdvancedUpload}>
-              Open Advanced Upload
-            </button>
-          </div>
-          <div className="space-grid">
-            <SpacePickerPanel onSpaceChange={(s) => setActiveSpace(s)} />
-            <SharingPanel space={activeSpace} />
-            <UploadPanel space={activeSpace} onUploaded={(cid) => setSelectedRoot(cid)} />
-            <UploadsPanel space={activeSpace} onSelectRoot={onSelectRoot} />
-            <FileViewerPanel space={activeSpace} root={selectedRoot} onCleared={clearRoot} />
-            {showUploadTool && (
-              <DmailUploadTool
-                space={activeSpace}
-                onUploaded={(cid) => setSelectedRoot(cid as any)}
-                onClose={() => setShowUploadTool(false)}
-              />
-            )}
-          </div>
+        <SpacePicker>
+          <DmailSpacesInner
+            selectedRoot={selectedRoot}
+            setSelectedRoot={setSelectedRoot}
+            showUploadTool={showUploadTool}
+            setShowUploadTool={setShowUploadTool}
+            openAdvancedUpload={openAdvancedUpload}
+          />
         </SpacePicker>
       </SpaceEnsurer>
     </section>
+  )
+}
+
+function DmailSpacesInner({
+  selectedRoot,
+  setSelectedRoot,
+  showUploadTool,
+  setShowUploadTool,
+  openAdvancedUpload,
+}: {
+  selectedRoot: UnknownLink | undefined
+  setSelectedRoot: (cid?: UnknownLink) => void
+  showUploadTool: boolean
+  setShowUploadTool: (v: boolean) => void
+  openAdvancedUpload: () => void
+}) {
+  const [{ selectedSpace }] = useSpacePickerContext()
+  const activeSpace = selectedSpace as SpaceT | undefined
+
+  useEffect(() => {
+    setSelectedRoot(undefined)
+  }, [activeSpace?.did(), setSelectedRoot])
+
+  const onSelectRoot = (root: UnknownLink) => {
+    setSelectedRoot(root)
+  }
+
+  const clearRoot = () => {
+    setSelectedRoot(undefined)
+  }
+
+  return (
+    <>
+      <div className="space-toolbar space-upload-launch">
+        <div className="space-help">
+          {activeSpace ? `Uploading to: ${activeSpace.name || activeSpace.did()}` : 'Select a space to upload.'}
+        </div>
+        <button className="space-secondary-btn" type="button" onClick={openAdvancedUpload}>
+          Open Advanced Upload
+        </button>
+      </div>
+      <div className="space-grid">
+        <SpacePickerPanel />
+        <SharingPanel space={activeSpace} />
+        <UploadPanel space={activeSpace} onUploaded={(cid) => setSelectedRoot(cid)} />
+        <UploadsPanel space={activeSpace} onSelectRoot={onSelectRoot} />
+        <FileViewerPanel space={activeSpace} root={selectedRoot} onCleared={clearRoot} />
+        {showUploadTool && (
+          <DmailUploadTool
+            space={activeSpace}
+            onUploaded={(cid) => setSelectedRoot(cid as any)}
+            onClose={() => setShowUploadTool(false)}
+          />
+        )}
+      </div>
+    </>
   )
 }
 

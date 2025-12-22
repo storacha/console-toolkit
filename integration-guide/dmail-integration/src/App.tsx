@@ -1,14 +1,10 @@
-import { Provider } from '../../../packages/react/src/providers/Provider'
-import { StorachaAuth } from '../../../packages/react/src/components/StorachaAuth'
+import { Provider, StorachaAuth } from '@storacha/console-toolkit-react'
 import { DmailAuthForm, AuthenticatedContent, DmailSubmitted } from './components/DmailAuth'
 
 function App() {
   const handleAuthEvent = (event: string, properties?: Record<string, any>) => {
     console.log('🔐 Dmail Auth Event:', event, properties)
   }
-
-  // const storachaService = { did: () => 'did:web:storacha.network' as const }
-  // const storachaConnection = { url: new URL('https://api.storacha.network') }
 
   return (
     <Provider>
