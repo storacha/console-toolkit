@@ -438,19 +438,17 @@ export const UploadToolTypeSelector = <T extends As = 'div'>({
 }: UploadToolTypeSelectorProps<T>) => {
   const [{ uploadType, isPrivateSpace }, { setUploadType }] = useUploadToolContext()
 
-  // Don't show type selector for private spaces
-  if (isPrivateSpace) {
-    return null
-  }
-
   const handleTypeChange = useCallback(
     (type: UploadType) => {
-      setUploadType(type)
-      // Reset files when type changes
       setUploadType(type)
     },
     [setUploadType]
   )
+
+  // Don't show type selector for private spaces
+  if (isPrivateSpace) {
+    return null
+  }
 
   const types: UploadType[] = ['file', 'directory', 'car']
 
@@ -459,7 +457,11 @@ export const UploadToolTypeSelector = <T extends As = 'div'>({
     const onChange = () => handleTypeChange(type)
 
     if (renderOption) {
-      return renderOption(type, checked, onChange)
+      return (
+        <React.Fragment key={type}>
+          {renderOption(type, checked, onChange)}
+        </React.Fragment>
+      )
     }
 
     return (
