@@ -332,9 +332,9 @@ function SpaceManagementApp() {
               <h2>Create a New Space</h2>
               <p className="app-section-description">A space is a decentralized bucket for storing your files</p>
             </div>
-            <PlanGate billingUrl="https://console.storacha.network/plans">
+            <PlanGate>
               <PlanGate.Fallback
-                renderFallback={({ planStatus, error, openBillingPage, refreshPlan }) => (
+                renderFallback={({ planStatus, error, selectPlan, refreshPlan }) => (
                   <div className="app-plan-gate-fallback">
                     {planStatus === 'loading' && (
                       <div className="app-loading-state">
@@ -343,18 +343,89 @@ function SpaceManagementApp() {
                       </div>
                     )}
                     {planStatus === 'missing' && (
-                      <div className="app-empty-state">
-                        <div className="app-empty-icon">📋</div>
-                        <p className="app-empty-title">Billing Plan Required</p>
-                        <p className="app-empty-description">
-                          To create a space, you need to select a billing plan.<br />
-                          Don't worry—there's a <strong>free Starter plan</strong> available!<br />
-                          <span style={{ fontSize: '0.9em', opacity: 0.8 }}>(Card verification required)</span>
-                        </p>
-                        <button className="app-empty-action" onClick={openBillingPage}>
-                          Select Free Plan →
-                        </button>
-                        <button className="app-back-button" onClick={refreshPlan} style={{ marginTop: '10px' }}>
+                      <div className="app-plans-container">
+                        <div className="app-plans-header">
+                          <h2 className="app-plans-title">Plans</h2>
+                          <p className="app-plans-description">
+                            Pick the price plan that works for you.
+                            <br />
+                            <strong>Starter</strong> is free for up to 5GiB.
+                            <br />
+                            <strong>Lite</strong> and <strong>Business</strong> plans unlock lower cost per GiB.
+                          </p>
+                        </div>
+                        <div className="app-plans-grid">
+                          <div className="app-plan-card">
+                            <div className="app-plan-header">
+                              <h3 className="app-plan-name">Starter</h3>
+                              <div className="app-plan-peppers">🌶️</div>
+                            </div>
+                            <div className="app-plan-price">$0/mo</div>
+                            <div className="app-plan-features">
+                              <div className="app-plan-feature">
+                                <strong>5GB Storage</strong>
+                                <span>Additional at $0.15/GB per month</span>
+                              </div>
+                              <div className="app-plan-feature">
+                                <strong>5GB Egress</strong>
+                                <span>Additional at $0.15/GB per month</span>
+                              </div>
+                            </div>
+                            <button
+                              className="app-plan-button"
+                              onClick={() => selectPlan('did:web:starter.storacha.network')}
+                            >
+                              Start Storing
+                            </button>
+                          </div>
+                          <div className="app-plan-card">
+                            <div className="app-plan-header">
+                              <h3 className="app-plan-name">Lite</h3>
+                              <div className="app-plan-peppers">🌶️🌶️</div>
+                            </div>
+                            <div className="app-plan-price">$10/mo</div>
+                            <div className="app-plan-features">
+                              <div className="app-plan-feature">
+                                <strong>100GB Storage</strong>
+                                <span>Additional at $0.05/GB per month</span>
+                              </div>
+                              <div className="app-plan-feature">
+                                <strong>100GB Egress</strong>
+                                <span>Additional at $0.05/GB per month</span>
+                              </div>
+                            </div>
+                            <button
+                              className="app-plan-button"
+                              onClick={() => selectPlan('did:web:lite.storacha.network')}
+                            >
+                              Start Storing
+                            </button>
+                          </div>
+                          <div className="app-plan-card">
+                            <div className="app-plan-header">
+                              <h3 className="app-plan-name">Business</h3>
+                              <div className="app-plan-peppers">🌶️🌶️🌶️</div>
+                            </div>
+                            <div className="app-plan-price">$100/mo</div>
+                            <div className="app-plan-features">
+                              <div className="app-plan-feature">
+                                <strong>2TB Storage</strong>
+                                <span>Additional at $0.03/GB per month</span>
+                              </div>
+                              <div className="app-plan-feature">
+                                <strong>2TB Egress</strong>
+                                <span>Additional at $0.03/GB per month</span>
+                              </div>
+                            </div>
+                            <button
+                              className="app-plan-button"
+                              onClick={() => selectPlan('did:web:business.storacha.network')}
+                            >
+                              Start Storing
+                            </button>
+                          </div>
+                        </div>
+                        <button className="app-back-button" onClick={refreshPlan} style={{ marginTop: '20px' }}>
                           I've selected a plan, refresh
                         </button>
                       </div>
