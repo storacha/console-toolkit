@@ -140,7 +140,7 @@ body {
   gap: 1rem;
 }
 
-.app-section-header > .app-space-header {
+.app-section-header>.app-space-header {
   width: 100%;
 }
 
@@ -466,8 +466,13 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Upload Items */
@@ -808,7 +813,7 @@ body {
   width: 100%;
 }
 
-.app-auth-form-wrapper form > div {
+.app-auth-form-wrapper form>div {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -816,11 +821,11 @@ body {
   margin-bottom: 1.5rem;
 }
 
-.app-auth-form-wrapper form > div:first-of-type {
+.app-auth-form-wrapper form>div:first-of-type {
   margin-top: 0;
 }
 
-.app-auth-form-wrapper form > div:last-of-type {
+.app-auth-form-wrapper form>div:last-of-type {
   margin-bottom: 0;
 }
 
