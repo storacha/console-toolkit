@@ -6,13 +6,14 @@ import {
   SpaceList,
   FileViewer,
   SharingTool,
-  SpaceEnsurer,
   UploadTool,
+  PlanGate,
   useSpacePickerContext,
   useSharingToolContext,
   useSpaceCreatorContext,
   useUploadToolContext,
   useFileViewerContext,
+  usePlanGateContext,
   UploadStatus,
 } from '@storacha/console-toolkit-react'
 import type { UnknownLink, Space } from '@storacha/ui-core'
@@ -36,7 +37,7 @@ function SpaceCreatorNameField() {
 
 function SpaceCreatorAccessTypeField() {
   const [{ accessType }, { setAccessType }] = useSpaceCreatorContext()
-  
+
   return (
     <div className="app-form-field">
       <label className="app-form-label">Access Type</label>
@@ -75,13 +76,13 @@ function SpaceCreatorAccessTypeField() {
 }
 
 
-function SharingView({ space, revokingEmails, setRevokingEmails }: { 
+function SharingView({ space, revokingEmails, setRevokingEmails }: {
   space: Space
   revokingEmails: Set<string>
   setRevokingEmails: React.Dispatch<React.SetStateAction<Set<string>>>
 }) {
   const [{ sharedEmails }, { revokeDelegation }] = useSharingToolContext()
-  
+
   const handleRevoke = async (email: string, delegation: any) => {
     try {
       setRevokingEmails(prev => new Set([...prev, email]))
@@ -105,7 +106,7 @@ function SharingView({ space, revokingEmails, setRevokingEmails }: {
         <p className="app-section-description">Share access to this space with others via email or DID</p>
       </div>
       <div className="app-sharing-container">
-        <SharingTool.Form 
+        <SharingTool.Form
           renderInput={() => (
             <div className="app-form-field">
               <label className="app-form-label" htmlFor="share-input">
@@ -139,7 +140,7 @@ function SharingView({ space, revokingEmails, setRevokingEmails }: {
             </button>
           )}
         />
-        <SharingTool.SharedList 
+        <SharingTool.SharedList
           renderItem={(item, index) => {
             const isRevoking = revokingEmails.has(item.email)
             return (
@@ -184,11 +185,13 @@ function SharingView({ space, revokingEmails, setRevokingEmails }: {
 }
 
 function SpaceManagementApp() {
-  const [{ accounts }, { logout }] = useW3()
+  const [{ accounts, client }, { logout }] = useW3()
   const [{ selectedSpace }, { setSelectedSpace }] = useSpacePickerContext()
   const [viewMode, setViewMode] = useState<'picker' | 'list' | 'viewer' | 'sharing' | 'creator' | 'upload'>('picker')
   const [selectedRoot, setSelectedRoot] = useState<UnknownLink | undefined>()
   const [revokingEmails, setRevokingEmails] = useState<Set<string>>(new Set())
+
+
 
   const handleLogout = async () => {
     try {
@@ -213,7 +216,7 @@ function SpaceManagementApp() {
                 <span className="app-user-label">Signed in as:</span>
                 <span className="app-user-email">{accounts[0].toEmail()}</span>
               </p>
-              <button 
+              <button
                 onClick={handleLogout}
                 className="app-logout-button"
                 title="Sign out"
@@ -226,40 +229,40 @@ function SpaceManagementApp() {
       </header>
 
       <nav className="app-nav">
-        <button 
+        <button
           onClick={() => setViewMode('picker')}
           className={`app-nav-button ${viewMode === 'picker' ? 'active' : ''}`}
         >
           <span>📁</span> Spaces
         </button>
-        <button 
+        <button
           onClick={() => setViewMode('creator')}
           className={`app-nav-button ${viewMode === 'creator' ? 'active' : ''}`}
         >
           <span>➕</span> Create Space
         </button>
-            {selectedSpace && (
-              <>
-                <button 
-                  onClick={() => setViewMode('upload')}
-                  className={`app-nav-button ${viewMode === 'upload' ? 'active' : ''}`}
-                >
-                  <span>📤</span> Upload
-                </button>
-                <button 
-                  onClick={() => setViewMode('list')}
-                  className={`app-nav-button ${viewMode === 'list' ? 'active' : ''}`}
-                >
-                  <span>📋</span> View Uploads
-                </button>
-                <button 
-                  onClick={() => setViewMode('sharing')}
-                  className={`app-nav-button ${viewMode === 'sharing' ? 'active' : ''}`}
-                >
-                  <span>🔗</span> Share
-                </button>
-              </>
-            )}
+        {selectedSpace && (
+          <>
+            <button
+              onClick={() => setViewMode('upload')}
+              className={`app-nav-button ${viewMode === 'upload' ? 'active' : ''}`}
+            >
+              <span>📤</span> Upload
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`app-nav-button ${viewMode === 'list' ? 'active' : ''}`}
+            >
+              <span>📋</span> View Uploads
+            </button>
+            <button
+              onClick={() => setViewMode('sharing')}
+              className={`app-nav-button ${viewMode === 'sharing' ? 'active' : ''}`}
+            >
+              <span>🔗</span> Share
+            </button>
+          </>
+        )}
       </nav>
 
       <main className="app-main">
@@ -273,10 +276,11 @@ function SpaceManagementApp() {
               <SpacePicker.Search placeholder="Search spaces by name or DID..." />
             </div>
             <div className="app-spaces-container">
-              <SpacePicker.List 
+              <SpacePicker.List
                 type="all"
                 renderItem={(space: Space) => (
-                  <div 
+                  <div
+                    key={space.did()}
                     className="app-space-item"
                     onClick={() => {
                       setSelectedSpace(space)
@@ -305,7 +309,7 @@ function SpaceManagementApp() {
                     <div className="app-empty-icon">📦</div>
                     <p className="app-empty-title">No spaces yet</p>
                     <p className="app-empty-description">Create your first space to get started</p>
-                    <button 
+                    <button
                       className="app-empty-action"
                       onClick={() => setViewMode('creator')}
                     >
@@ -323,53 +327,167 @@ function SpaceManagementApp() {
         )}
 
         {viewMode === 'creator' && (
-          <div className="app-section">
+          <div className="app-section app-section-creator">
             <div className="app-section-header">
               <h2>Create a New Space</h2>
               <p className="app-section-description">A space is a decentralized bucket for storing your files</p>
             </div>
-            <SpaceCreator
-              gatewayHost="https://w3s.link"
-              gatewayDID="did:web:w3s.link"
-              providerDID="did:web:web3.storage"
-              onSpaceCreated={(space) => {
-                setSelectedSpace(space)
-                setViewMode('list')
-              }}
-              onError={(error) => {
-                console.error('Space creation error:', error)
-                alert(`Failed to create space: ${error.message}`)
-              }}
-            >
-              <SpaceCreator.Form 
-                renderContainer={(children) => (
-                  <div className="app-creator-form">
-                    {children}
+            <PlanGate>
+              <PlanGate.Fallback
+                renderFallback={({ planStatus, error, selectPlan, refreshPlan }) => (
+                  <div className="app-plan-gate-fallback">
+                    {planStatus === 'loading' && (
+                      <div className="app-loading-state">
+                        <span className="app-spinner"></span>
+                        <p>Checking your plan status...</p>
+                      </div>
+                    )}
+                    {planStatus === 'missing' && (
+                      <div className="app-plans-container">
+                        <div className="app-plans-header">
+                          <h2 className="app-plans-title">Plans</h2>
+                          <p className="app-plans-description">
+                            Pick the price plan that works for you.
+                            <br />
+                            <strong>Starter</strong> is free for up to 5GiB.
+                            <br />
+                            <strong>Lite</strong> and <strong>Business</strong> plans unlock lower cost per GiB.
+                          </p>
+                        </div>
+                        <div className="app-plans-grid">
+                          <div className="app-plan-card">
+                            <div className="app-plan-header">
+                              <h3 className="app-plan-name">Starter</h3>
+                              <div className="app-plan-peppers">🌶️</div>
+                            </div>
+                            <div className="app-plan-price">$0/mo</div>
+                            <div className="app-plan-features">
+                              <div className="app-plan-feature">
+                                <strong>5GB Storage</strong>
+                                <span>Additional at $0.15/GB per month</span>
+                              </div>
+                              <div className="app-plan-feature">
+                                <strong>5GB Egress</strong>
+                                <span>Additional at $0.15/GB per month</span>
+                              </div>
+                            </div>
+                            <button
+                              className="app-plan-button"
+                              onClick={() => selectPlan('did:web:starter.storacha.network')}
+                            >
+                              Start Storing
+                            </button>
+                          </div>
+                          <div className="app-plan-card">
+                            <div className="app-plan-header">
+                              <h3 className="app-plan-name">Lite</h3>
+                              <div className="app-plan-peppers">🌶️🌶️</div>
+                            </div>
+                            <div className="app-plan-price">$10/mo</div>
+                            <div className="app-plan-features">
+                              <div className="app-plan-feature">
+                                <strong>100GB Storage</strong>
+                                <span>Additional at $0.05/GB per month</span>
+                              </div>
+                              <div className="app-plan-feature">
+                                <strong>100GB Egress</strong>
+                                <span>Additional at $0.05/GB per month</span>
+                              </div>
+                            </div>
+                            <button
+                              className="app-plan-button"
+                              onClick={() => selectPlan('did:web:lite.storacha.network')}
+                            >
+                              Start Storing
+                            </button>
+                          </div>
+                          <div className="app-plan-card">
+                            <div className="app-plan-header">
+                              <h3 className="app-plan-name">Business</h3>
+                              <div className="app-plan-peppers">🌶️🌶️🌶️</div>
+                            </div>
+                            <div className="app-plan-price">$100/mo</div>
+                            <div className="app-plan-features">
+                              <div className="app-plan-feature">
+                                <strong>2TB Storage</strong>
+                                <span>Additional at $0.03/GB per month</span>
+                              </div>
+                              <div className="app-plan-feature">
+                                <strong>2TB Egress</strong>
+                                <span>Additional at $0.03/GB per month</span>
+                              </div>
+                            </div>
+                            <button
+                              className="app-plan-button"
+                              onClick={() => selectPlan('did:web:business.storacha.network')}
+                            >
+                              Start Storing
+                            </button>
+                          </div>
+                        </div>
+                        <button className="app-back-button" onClick={refreshPlan} style={{ marginTop: '20px' }}>
+                          I've selected a plan, refresh
+                        </button>
+                      </div>
+                    )}
+                    {planStatus === 'error' && (
+                      <div className="app-empty-state">
+                        <div className="app-empty-icon">⚠️</div>
+                        <p className="app-empty-title">Error</p>
+                        <p className="app-empty-description">{error || 'Failed to check plan status.'}</p>
+                        <button className="app-empty-action" onClick={refreshPlan}>
+                          Try Again
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
-                renderNameInput={() => <SpaceCreatorNameField />}
-                renderAccessTypeSelector={() => <SpaceCreatorAccessTypeField />}
-                renderSubmitButton={(disabled) => (
-                  <button
-                    type="submit"
-                    className={`app-submit-button ${disabled ? 'loading' : ''}`}
-                    disabled={disabled}
-                  >
-                    {disabled ? (
-                      <>
-                        <span className="app-spinner"></span>
-                        Creating Space...
-                      </>
-                    ) : (
-                      <>
-                        <span>➕</span>
-                        Create Space
-                      </>
-                    )}
-                  </button>
-                )}
               />
-            </SpaceCreator>
+              <PlanGate.Gate>
+                <SpaceCreator
+                  gatewayHost="https://w3s.link"
+                  gatewayDID="did:web:w3s.link"
+                  providerDID="did:web:web3.storage"
+                  onSpaceCreated={(space) => {
+                    setSelectedSpace(space)
+                    setViewMode('list')
+                  }}
+                  onError={(error) => {
+                    console.error('Space creation error:', error)
+                    alert(`Failed to create space: ${error.message}`)
+                  }}
+                >
+                  <SpaceCreator.Form
+                    renderContainer={(children) => (
+                      <div className="app-creator-form">
+                        {children}
+                      </div>
+                    )}
+                    renderNameInput={() => <SpaceCreatorNameField />}
+                    renderAccessTypeSelector={() => <SpaceCreatorAccessTypeField />}
+                    renderSubmitButton={(disabled) => (
+                      <button
+                        type="submit"
+                        className={`app-submit-button ${disabled ? 'loading' : ''}`}
+                        disabled={disabled}
+                      >
+                        {disabled ? (
+                          <>
+                            <span className="app-spinner"></span>
+                            Creating Space...
+                          </>
+                        ) : (
+                          <>
+                            <span>➕</span>
+                            Create Space
+                          </>
+                        )}
+                      </button>
+                    )}
+                  />
+                </SpaceCreator>
+              </PlanGate.Gate>
+            </PlanGate>
           </div>
         )}
 
@@ -393,9 +511,9 @@ function SpaceManagementApp() {
               </button>
             </div>
             <SpaceList space={selectedSpace}>
-              <SpaceList.List 
+              <SpaceList.List
                 renderItem={(upload, index) => (
-                  <div 
+                  <div
                     key={upload.root.toString()}
                     className="app-upload-item"
                     onClick={() => {
@@ -436,116 +554,123 @@ function SpaceManagementApp() {
               <SpaceList.Pagination />
             </SpaceList>
           </div>
-        )}
+        )
+        }
 
-        {viewMode === 'viewer' && selectedSpace && selectedRoot && (
-          <div className="app-section">
-            <div className="app-section-header">
-              <button 
-                onClick={() => {
-                  setViewMode('list')
-                  setSelectedRoot(undefined)
-                }}
-                className="app-back-button"
-              >
-                ← Back to Upload
-              </button>
-              <h2>File Details</h2>
-            </div>
-            <FileViewer space={selectedSpace} root={selectedRoot}>
-              <div className="app-file-viewer">
-                <FileViewer.Root 
-                  renderRoot={(root: UnknownLink) => (
-                    <div className="app-file-detail">
-                      <label className="app-file-label">Root CID</label>
-                      <div className="app-file-value-container">
-                        <code className="app-file-code">{root.toString()}</code>
-                        <button
-                          className="app-copy-button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(root.toString())
-                            alert('CID copied to clipboard!')
-                          }}
-                        >
-                          📋 Copy
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                />
-                <FileViewer.URL 
-                  renderURL={(url: string) => (
-                    <div className="app-file-detail">
-                      <label className="app-file-label">Gateway URL</label>
-                      <div className="app-file-value-container">
-                        <a 
-                          href={url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="app-file-link"
-                        >
-                          {url}
-                        </a>
-                        <button
-                          className="app-copy-button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(url)
-                            alert('URL copied to clipboard!')
-                          }}
-                        >
-                          📋 Copy
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                />
-                <FileViewer.Shards 
-                  renderShard={(shard, index) => (
-                    <div key={shard.toString()} className="app-file-detail">
-                      <label className="app-file-label">Shard {index + 1}</label>
-                      <div className="app-file-value-container">
-                        <code className="app-file-code">{shard.toString()}</code>
-                        <button
-                          className="app-copy-button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(shard.toString())
-                            alert('Shard CID copied to clipboard!')
-                          }}
-                        >
-                          📋 Copy
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                />
-                <div className="app-file-actions">
-                  <RemoveFileButton 
-                    onRemove={() => {
-                      setViewMode('list')
-                      setSelectedRoot(undefined)
-                    }}
-                  />
-                </div>
+        {
+          viewMode === 'viewer' && selectedSpace && selectedRoot && (
+            <div className="app-section">
+              <div className="app-section-header">
+                <button
+                  onClick={() => {
+                    setViewMode('list')
+                    setSelectedRoot(undefined)
+                  }}
+                  className="app-back-button"
+                >
+                  ← Back to Upload
+                </button>
+                <h2>File Details</h2>
               </div>
-            </FileViewer>
-          </div>
-        )}
+              <FileViewer space={selectedSpace} root={selectedRoot}>
+                <div className="app-file-viewer">
+                  <FileViewer.Root
+                    renderRoot={(root: UnknownLink) => (
+                      <div className="app-file-detail">
+                        <label className="app-file-label">Root CID</label>
+                        <div className="app-file-value-container">
+                          <code className="app-file-code">{root.toString()}</code>
+                          <button
+                            className="app-copy-button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(root.toString())
+                              alert('CID copied to clipboard!')
+                            }}
+                          >
+                            📋 Copy
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  />
+                  <FileViewer.URL
+                    renderURL={(url: string) => (
+                      <div className="app-file-detail">
+                        <label className="app-file-label">Gateway URL</label>
+                        <div className="app-file-value-container">
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="app-file-link"
+                          >
+                            {url}
+                          </a>
+                          <button
+                            className="app-copy-button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(url)
+                              alert('URL copied to clipboard!')
+                            }}
+                          >
+                            📋 Copy
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  />
+                  <FileViewer.Shards
+                    renderShard={(shard, index) => (
+                      <div key={shard.toString()} className="app-file-detail">
+                        <label className="app-file-label">Shard {index + 1}</label>
+                        <div className="app-file-value-container">
+                          <code className="app-file-code">{shard.toString()}</code>
+                          <button
+                            className="app-copy-button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(shard.toString())
+                              alert('Shard CID copied to clipboard!')
+                            }}
+                          >
+                            📋 Copy
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  />
+                  <div className="app-file-actions">
+                    <RemoveFileButton
+                      onRemove={() => {
+                        setViewMode('list')
+                        setSelectedRoot(undefined)
+                      }}
+                    />
+                  </div>
+                </div>
+              </FileViewer>
+            </div>
+          )
+        }
 
-        {viewMode === 'upload' && selectedSpace && (
-          <UploadView space={selectedSpace} />
-        )}
+        {
+          viewMode === 'upload' && selectedSpace && (
+            <UploadView space={selectedSpace} />
+          )
+        }
 
-        {viewMode === 'sharing' && selectedSpace && (
-          <SharingTool space={selectedSpace}>
-            <SharingView 
-              space={selectedSpace}
-              revokingEmails={revokingEmails}
-              setRevokingEmails={setRevokingEmails}
-            />
-          </SharingTool>
-        )}
-      </main>
-    </div>
+        {
+          viewMode === 'sharing' && selectedSpace && (
+            <SharingTool space={selectedSpace}>
+              <SharingView
+                space={selectedSpace}
+                revokingEmails={revokingEmails}
+                setRevokingEmails={setRevokingEmails}
+              />
+            </SharingTool>
+          )
+        }
+      </main >
+    </div >
   )
 }
 
@@ -597,25 +722,25 @@ function UploadView({ space }: { space: Space }) {
       </div>
 
       <UploadTool space={space}>
-        <UploadViewContent 
-          isDragging={isDragging} 
-          onDragOver={handleDragOver} 
-          onDragLeave={handleDragLeave} 
-          onDrop={handleDrop} 
-          formatFileSize={formatFileSize} 
+        <UploadViewContent
+          isDragging={isDragging}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          formatFileSize={formatFileSize}
         />
       </UploadTool>
     </div>
   )
 }
 
-function UploadViewContent({ 
-  isDragging, 
-  onDragOver, 
-  onDragLeave, 
-  onDrop, 
-  formatFileSize 
-}: { 
+function UploadViewContent({
+  isDragging,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  formatFileSize
+}: {
   isDragging: boolean
   onDragOver: (e: React.DragEvent) => void
   onDragLeave: (e: React.DragEvent) => void
@@ -658,7 +783,7 @@ function UploadViewContent({
           <h3 className="app-upload-section-title">Type</h3>
           <UploadTool.TypeSelector
             renderOption={(type, checked, onChange) => (
-              <label className={`app-upload-type-option ${checked ? 'selected' : ''}`}>
+              <label key={type} className={`app-upload-type-option ${checked ? 'selected' : ''}`}>
                 <input
                   type="radio"
                   checked={checked}
@@ -805,7 +930,7 @@ function RemoveFileButton({ onRemove }: { onRemove: () => void }) {
 
   const handleConfirmRemove = useCallback(async () => {
     if (!root) return
-    
+
     try {
       setRemoving(true)
       await remove({ shards: true })
@@ -825,7 +950,7 @@ function RemoveFileButton({ onRemove }: { onRemove: () => void }) {
 
   if (showConfirm) {
     const shards = upload?.shards || []
-    
+
     return (
       <div className="app-remove-confirm-overlay">
         <div className="app-remove-confirm-dialog">
@@ -833,7 +958,7 @@ function RemoveFileButton({ onRemove }: { onRemove: () => void }) {
           <p className="app-remove-confirm-message">
             Are you sure you want to remove <code className="app-remove-confirm-cid">{root?.toString()}</code>?
           </p>
-          
+
           {shards.length > 0 && (
             <div className="app-remove-confirm-shards">
               <p className="app-remove-confirm-shards-title">The following shards will be removed:</p>
@@ -851,11 +976,11 @@ function RemoveFileButton({ onRemove }: { onRemove: () => void }) {
               </div>
             </div>
           )}
-          
+
           <p className="app-remove-confirm-warning">
             Any uploads using the same shards as those listed above will be corrupted. This cannot be undone.
           </p>
-          
+
           <div className="app-remove-confirm-actions">
             <button
               className="app-remove-confirm-cancel-button"
@@ -885,7 +1010,7 @@ function RemoveFileButton({ onRemove }: { onRemove: () => void }) {
   }
 
   return (
-    <FileViewer.RemoveButton 
+    <FileViewer.RemoveButton
       removeShards={true}
       renderButton={(onClick, loading) => (
         <button
@@ -924,7 +1049,7 @@ function App() {
           )}
           renderForm={() => (
             <div className="app-auth-container">
-              <StorachaAuth.Form 
+              <StorachaAuth.Form
                 renderContainer={(children) => (
                   <div className="app-auth-form-wrapper">
                     {children}
@@ -977,7 +1102,7 @@ function App() {
           )}
           renderSubmitted={() => (
             <div className="app-auth-container">
-              <StorachaAuth.Submitted 
+              <StorachaAuth.Submitted
                 renderContainer={(children) => (
                   <div className="app-auth-form-wrapper">
                     {children}
@@ -1009,11 +1134,9 @@ function App() {
             </div>
           )}
         >
-          <SpaceEnsurer>
-            <SpacePicker>
-              <SpaceManagementApp />
-            </SpacePicker>
-          </SpaceEnsurer>
+          <SpacePicker>
+            <SpaceManagementApp />
+          </SpacePicker>
         </StorachaAuth.Ensurer>
       </StorachaAuth>
     </Provider>
