@@ -15,6 +15,7 @@ import {
   useSpaceListContext,
   useFileViewerContext,
   useSharingToolContext,
+  usePlanGateContext,
 } from '@storacha/console-toolkit-react'
 import { DmailUploadTool } from './DmailUploadTool'
 
@@ -45,10 +46,10 @@ function PlanGateFallbackContent({
 
   if (planStatus === 'missing') {
     return (
-      <div className="space-form">
-        <div className="space-field">
-          <h3 className="space-card-title" style={{ marginBottom: '16px' }}>Billing Plan Required</h3>
-          <p className="space-help" style={{ marginBottom: '24px' }}>
+      <div className="space-plans-container">
+        <div className="space-plans-header">
+          <h2 className="space-plans-title">Plans</h2>
+          <p className="space-plans-description">
             Pick the price plan that works for you.
             <br />
             <strong>Starter</strong> is free for up to 5GiB.
@@ -56,79 +57,93 @@ function PlanGateFallbackContent({
             <strong>Lite</strong> and <strong>Business</strong> plans unlock lower cost per GiB.
           </p>
         </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-          <div className="space-card-3d" style={{ padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h4 style={{ margin: 0 }}>Starter</h4>
-              <span>🌶️</span>
+        <div className="space-plans-grid">
+          <div className="space-plan-card">
+            <div className="space-plan-header">
+              <h3 className="space-plan-name">Starter</h3>
+              <div className="space-plan-peppers">🌶️</div>
             </div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '12px' }}>$0/mo</div>
-            <div className="space-help" style={{ fontSize: '12px', marginBottom: '12px' }}>
-              <div><strong>5GB Storage</strong></div>
-              <div>Additional at $0.15/GB per month</div>
-            </div>
-            <div className="space-help" style={{ fontSize: '12px', marginBottom: '16px' }}>
-              <div><strong>5GB Egress</strong></div>
-              <div>Additional at $0.15/GB per month</div>
+            <div className="space-plan-price">$0/mo</div>
+            <div className="space-plan-features">
+              <div className="space-plan-feature">
+                <div className="space-plan-feature-main">
+                  <strong>5GB Storage</strong>
+                </div>
+                <div className="space-plan-feature-sub">Additional at $0.15/GB per month</div>
+              </div>
+              <div className="space-plan-feature">
+                <div className="space-plan-feature-main">
+                  <strong>5GB Egress</strong>
+                </div>
+                <div className="space-plan-feature-sub">Additional at $0.15/GB per month</div>
+              </div>
             </div>
             <button
-              className="space-primary-btn"
+              className="space-plan-button"
               type="button"
               onClick={() => selectPlan('did:web:starter.storacha.network')}
             >
-              Start Storing
+              START STORING
             </button>
           </div>
-
-          <div className="space-card-3d" style={{ padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h4 style={{ margin: 0 }}>Lite</h4>
-              <span>🌶️🌶️</span>
+          <div className="space-plan-card">
+            <div className="space-plan-header">
+              <h3 className="space-plan-name">Lite</h3>
+              <div className="space-plan-peppers">🌶️🌶️</div>
             </div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '12px' }}>$10/mo</div>
-            <div className="space-help" style={{ fontSize: '12px', marginBottom: '12px' }}>
-              <div><strong>100GB Storage</strong></div>
-              <div>Additional at $0.05/GB per month</div>
-            </div>
-            <div className="space-help" style={{ fontSize: '12px', marginBottom: '16px' }}>
-              <div><strong>100GB Egress</strong></div>
-              <div>Additional at $0.05/GB per month</div>
+            <div className="space-plan-price">$10/mo</div>
+            <div className="space-plan-features">
+              <div className="space-plan-feature">
+                <div className="space-plan-feature-main">
+                  <strong>100GB Storage</strong>
+                </div>
+                <div className="space-plan-feature-sub">Additional at $0.05/GB per month</div>
+              </div>
+              <div className="space-plan-feature">
+                <div className="space-plan-feature-main">
+                  <strong>100GB Egress</strong>
+                </div>
+                <div className="space-plan-feature-sub">Additional at $0.05/GB per month</div>
+              </div>
             </div>
             <button
-              className="space-primary-btn"
+              className="space-plan-button"
               type="button"
               onClick={() => selectPlan('did:web:lite.storacha.network')}
             >
-              Start Storing
+              START STORING
             </button>
           </div>
-
-          <div className="space-card-3d" style={{ padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h4 style={{ margin: 0 }}>Business</h4>
-              <span>🌶️🌶️🌶️</span>
+          <div className="space-plan-card">
+            <div className="space-plan-header">
+              <h3 className="space-plan-name">Business</h3>
+              <div className="space-plan-peppers">🌶️🌶️🌶️</div>
             </div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '12px' }}>$100/mo</div>
-            <div className="space-help" style={{ fontSize: '12px', marginBottom: '12px' }}>
-              <div><strong>2TB Storage</strong></div>
-              <div>Additional at $0.03/GB per month</div>
-            </div>
-            <div className="space-help" style={{ fontSize: '12px', marginBottom: '16px' }}>
-              <div><strong>2TB Egress</strong></div>
-              <div>Additional at $0.03/GB per month</div>
+            <div className="space-plan-price">$100/mo</div>
+            <div className="space-plan-features">
+              <div className="space-plan-feature">
+                <div className="space-plan-feature-main">
+                  <strong>2TB Storage</strong>
+                </div>
+                <div className="space-plan-feature-sub">Additional at $0.03/GB per month</div>
+              </div>
+              <div className="space-plan-feature">
+                <div className="space-plan-feature-main">
+                  <strong>2TB Egress</strong>
+                </div>
+                <div className="space-plan-feature-sub">Additional at $0.03/GB per month</div>
+              </div>
             </div>
             <button
-              className="space-primary-btn"
+              className="space-plan-button"
               type="button"
               onClick={() => selectPlan('did:web:business.storacha.network')}
             >
-              Start Storing
+              START STORING
             </button>
           </div>
         </div>
-
-        <button className="space-secondary-btn" type="button" onClick={refreshPlan}>
+        <button className="space-secondary-btn" type="button" onClick={refreshPlan} style={{ marginTop: '20px' }}>
           I've selected a plan, refresh
         </button>
       </div>
@@ -152,6 +167,49 @@ function PlanGateFallbackContent({
   return null
 }
 
+function SpaceCreatorWithPlanErrorHandling() {
+  const [, { refreshPlan }] = usePlanGateContext()
+
+  return (
+    <SpaceCreator
+      gatewayHost={DEFAULT_GATEWAY_HOST}
+      gatewayDID={DEFAULT_GATEWAY_DID}
+      providerDID={DEFAULT_PROVIDER_DID}
+      onError={(error) => {
+        console.error('Space creation error:', error)
+        const errorMessage = (error as any)?.cause?.message || error.message
+        // Check if this is a plan-related error
+        const isPlanError =
+          (error as any)?.isAccountPlanMissing ||
+          errorMessage?.includes('AccountPlanMissing') ||
+          errorMessage?.includes('payment plan') ||
+          errorMessage?.includes('plan selection') ||
+          errorMessage?.includes('billing plan') ||
+          (errorMessage?.includes('provisioning') && errorMessage?.includes('plan'))
+
+        if (isPlanError) {
+          // Refresh plan status to show the plan selection UI
+          refreshPlan().catch((err) => {
+            console.error('Failed to refresh plan status:', err)
+          })
+        }
+      }}
+    >
+      <SpaceCreator.Form
+        className="space-form"
+        renderNameInput={() => <CreatorNameInput />}
+        renderAccessTypeSelector={() => <CreatorAccessSelect />}
+        renderSubmitButton={(disabled) => (
+          <button className="space-primary-btn" type="submit" disabled={disabled}>
+            {disabled ? 'Creating...' : 'Create Space'}
+          </button>
+        )}
+      />
+      <CreatorStatus />
+    </SpaceCreator>
+  )
+}
+
 function SpaceCreatorCard() {
   return (
     <div className="space-card-3d">
@@ -172,23 +230,7 @@ function SpaceCreatorCard() {
           )}
         />
         <PlanGate.Gate>
-          <SpaceCreator
-            gatewayHost={DEFAULT_GATEWAY_HOST}
-            gatewayDID={DEFAULT_GATEWAY_DID}
-            providerDID={DEFAULT_PROVIDER_DID}
-          >
-            <SpaceCreator.Form
-              className="space-form"
-              renderNameInput={() => <CreatorNameInput />}
-              renderAccessTypeSelector={() => <CreatorAccessSelect />}
-              renderSubmitButton={(disabled) => (
-                <button className="space-primary-btn" type="submit" disabled={disabled}>
-                  {disabled ? 'Creating...' : 'Create Space'}
-                </button>
-              )}
-            />
-            <CreatorStatus />
-          </SpaceCreator>
+          <SpaceCreatorWithPlanErrorHandling />
         </PlanGate.Gate>
       </PlanGate>
     </div>
@@ -294,6 +336,23 @@ function SpacePickerPanel() {
                 gatewayHost={DEFAULT_GATEWAY_HOST}
                 gatewayDID={DEFAULT_GATEWAY_DID}
                 providerDID={DEFAULT_PROVIDER_DID}
+                onError={(error) => {
+                  console.error('Space creation error:', error)
+                  const errorMessage = (error as any)?.cause?.message || error.message
+                  // Filter out plan-related errors since PlanGate handles plan selection
+                  const isPlanError =
+                    (error as any)?.isAccountPlanMissing ||
+                    errorMessage?.includes('AccountPlanMissing') ||
+                    errorMessage?.includes('payment plan') ||
+                    errorMessage?.includes('plan selection') ||
+                    errorMessage?.includes('billing plan') ||
+                    (errorMessage?.includes('provisioning') && errorMessage?.includes('plan'))
+
+                  if (isPlanError) {
+                    // PlanGate will handle showing the plan selection UI
+                    return
+                  }
+                }}
               >
                 <SpaceCreator.Form
                   className="space-compact-form"

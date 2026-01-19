@@ -6,4 +6,5 @@ export { useFileViewerContext } from './FileViewer.js'
 export * from './SharingTool.js'
 export * from './SpaceEnsurer.js'
 export * from './PlanGate.js'
+export { usePlanGateContext } from './PlanGate.js'
 

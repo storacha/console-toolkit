@@ -1531,3 +1531,157 @@ body {
     font-size: 1rem;
   }
 }
+
+/* Enhanced Plan Selection UI Styles */
+.space-plans-container {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.space-plans-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.space-plans-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #E91315;
+  margin: 0 0 1rem 0;
+}
+
+.space-plans-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.space-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.space-plan-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%);
+  backdrop-filter: blur(16px);
+  border: 2px solid rgba(233, 19, 21, 0.25);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.space-plan-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(233, 19, 21, 0.5);
+  box-shadow: 0 15px 50px rgba(233, 19, 21, 0.3);
+}
+
+.space-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.space-plan-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+}
+
+.space-plan-peppers {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.space-plan-price {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #E91315;
+  margin-bottom: 1.5rem;
+  line-height: 1;
+}
+
+.space-plan-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  flex: 1;
+}
+
+.space-plan-feature {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.space-plan-feature-main {
+  font-size: 1rem;
+  color: white;
+}
+
+.space-plan-feature-main strong {
+  font-weight: 700;
+  color: white;
+}
+
+.space-plan-feature-sub {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+}
+
+.space-plan-button {
+  background: #E91315;
+  border: none;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(233, 19, 21, 0.4);
+  width: 100%;
+  margin-top: auto;
+}
+
+.space-plan-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(233, 19, 21, 0.6);
+  background: #ff1a1d;
+}
+
+.space-plan-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .space-plans-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .space-plan-card {
+    padding: 1.5rem;
+  }
+
+  .space-plans-title {
+    font-size: 1.5rem;
+  }
+
+  .space-plan-price {
+    font-size: 2rem;
+  }
+}
