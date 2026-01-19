@@ -40,19 +40,8 @@ export function Web3MailSpaces() {
 
   return (
     <div className="w3m-app-container">
-      <header className="w3m-header">
-        <h1 className="w3m-title">Web3Mail Storage</h1>
-        {accounts[0] && (
-          <div className="w3m-header-user">
-            <span className="w3m-user-email">{accounts[0].toEmail()}</span>
-            <button onClick={handleLogout} className="w3m-logout-btn">
-              🚪 Logout
-            </button>
-          </div>
-        )}
-      </header>
 
-      <nav className="w3m-nav">
+        <nav className="w3m-nav">
         <button
           onClick={() => setViewMode('picker')}
           className={`w3m-nav-btn ${viewMode === 'picker' ? 'active' : ''}`}
