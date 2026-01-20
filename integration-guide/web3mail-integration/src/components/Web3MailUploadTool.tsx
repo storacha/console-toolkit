@@ -93,6 +93,7 @@ function UploadToolContent({
   onDrop: (e: React.DragEvent) => void
 }) {
   const [{ uploadType, file, isPrivateSpace }, { setFiles, reset }] = useUploadToolContext()
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const handleDropWithFiles = useCallback(
     (e: React.DragEvent) => {
@@ -104,6 +105,17 @@ function UploadToolContent({
     },
     [onDrop, setFiles]
   )
+
+  const handleDropzoneClick = useCallback((e: React.MouseEvent) => {
+    // Prevent triggering if clicking on the submit button or other interactive elements
+    const target = e.target as HTMLElement
+    if (target.closest('button') || target.closest('a') || target.closest('input[type="file"]')) {
+      return
+    }
+    // Find the file input and trigger it
+    const input = fileInputRef.current || document.querySelector('.upload-input-hidden') as HTMLInputElement
+    input?.click()
+  }, [])
 
   const getUploadPrompt = () => {
     switch (uploadType) {
@@ -140,22 +152,26 @@ function UploadToolContent({
         </div>
       )}
 
-      <div
+      <label
+        htmlFor="web3mail-upload-input"
         className={`upload-dropzone ${isDragging ? 'is-dragging' : ''} ${file ? 'has-file' : ''}`}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={handleDropWithFiles}
+        onClick={handleDropzoneClick}
       >
+        <UploadTool.Input
+          id="web3mail-upload-input"
+          ref={fileInputRef}
+          className="space-input upload-input-hidden"
+          allowDirectory={uploadType === 'directory'}
+        />
         <UploadTool.Status
           renderIdle={(idleFile, idleFiles) => {
             if (!idleFile) {
               return (
                 <div className="upload-dropzone-inner">
                   <div className="upload-dropzone-icon">📁</div>
-                  <UploadTool.Input
-                    className="space-input upload-input-hidden"
-                    allowDirectory={uploadType === 'directory'}
-                  />
                   <p className="upload-dropzone-text">{getUploadPrompt()}</p>
                   <p className="space-help">
                     {idleFiles?.length
@@ -236,7 +252,7 @@ function UploadToolContent({
             </div>
           )}
         />
-      </div>
+      </label>
 
       {!isPrivateSpace && uploadType === 'file' && (
         <div className="space-field">

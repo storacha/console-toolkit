@@ -1,5 +1,5 @@
+import React, { useMemo, useState, useCallback } from 'react'
 import type { UnknownLink } from '@storacha/ui-core'
-import { useMemo } from 'react'
 import {
   UploadTool,
   useUploadToolContext,
@@ -13,6 +13,51 @@ type UploadToolProps = {
 }
 
 export function DmailUploadTool({ space, onUploaded, onClose }: UploadToolProps) {
+  const [isDragging, setIsDragging] = useState(false)
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+  }, [])
+
+  return (
+    <DmailUploadToolContent
+      space={space}
+      onUploaded={onUploaded}
+      onClose={onClose}
+      isDragging={isDragging}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    />
+  )
+}
+
+function DmailUploadToolContent({
+  space,
+  onUploaded,
+  onClose,
+  isDragging,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+}: UploadToolProps & {
+  isDragging: boolean
+  onDragOver: (e: React.DragEvent) => void
+  onDragLeave: (e: React.DragEvent) => void
+  onDrop: (e: React.DragEvent) => void
+}) {
+
   return (
     <div className="space-card-3d upload-advanced-card" id="dmail-upload-tool">
       <div className="space-card-header upload-tool-header">
@@ -55,11 +100,14 @@ export function DmailUploadTool({ space, onUploaded, onClose }: UploadToolProps)
               />
             </div>
 
+            <UploadToolWithDropzone
+              isDragging={isDragging}
+              onDragOver={onDragOver}
+              onDragLeave={onDragLeave}
+              onDrop={onDrop}
+            />
+
             <div className="space-field">
-              <label className="space-label" htmlFor="advanced-upload-input-dmail">
-                Select files
-              </label>
-              <UploadTool.Input id="advanced-upload-input-dmail" className="space-input" multiple />
               <UploadTool.WrapCheckbox
                 className="space-checkbox"
                 renderCheckbox={(checked, toggle) => (
@@ -109,6 +157,70 @@ export function DmailUploadTool({ space, onUploaded, onClose }: UploadToolProps)
         <div className="space-empty">Pick a space to unlock uploads.</div>
       )}
     </div>
+  )
+}
+
+function UploadToolWithDropzone({
+  isDragging,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+}: {
+  isDragging: boolean
+  onDragOver: (e: React.DragEvent) => void
+  onDragLeave: (e: React.DragEvent) => void
+  onDrop: (e: React.DragEvent) => void
+}) {
+  const [{ file }, { setFiles }] = useUploadToolContext()
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  const handleDropWithFiles = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      onDrop(e)
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        setFiles([...e.dataTransfer.files])
+      }
+    },
+    [onDrop, setFiles]
+  )
+
+  const handleDropzoneClick = useCallback((e: React.MouseEvent) => {
+    // Prevent triggering if clicking on the submit button or other interactive elements
+    const target = e.target as HTMLElement
+    if (target.closest('button') || target.closest('a') || target.closest('input[type="file"]')) {
+      return
+    }
+    // Find the file input and trigger it
+    const input = fileInputRef.current || document.getElementById('advanced-upload-input-dmail') as HTMLInputElement
+    input?.click()
+  }, [])
+
+  return (
+    <label
+      htmlFor="advanced-upload-input-dmail"
+      className={`upload-dropzone ${isDragging ? 'is-dragging' : ''} ${file ? 'has-file' : ''}`}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={handleDropWithFiles}
+      onClick={handleDropzoneClick}
+    >
+      <UploadTool.Input
+        ref={fileInputRef}
+        id="advanced-upload-input-dmail"
+        className="space-input upload-input-hidden"
+        multiple
+      />
+      <div className="upload-dropzone-inner">
+        <div className="upload-dropzone-icon">📁</div>
+        <p className="upload-dropzone-text">
+          {file ? `Selected: ${file.name}` : 'Drag files here or click to browse'}
+        </p>
+        <p className="space-help">
+          Choose files or a directory to upload.
+        </p>
+      </div>
+    </label>
   )
 }
 
