@@ -7,4 +7,6 @@ export * from './SharingTool.js'
 export * from './SpaceEnsurer.js'
 export * from './PlanGate.js'
 export { usePlanGateContext } from './PlanGate.js'
+export * from './ImportSpace.js'
+export { useImportSpaceContext } from './ImportSpace.js'
 

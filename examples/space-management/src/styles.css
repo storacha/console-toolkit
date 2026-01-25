@@ -1777,3 +1777,264 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Import Space Styles */
+.app-import-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin-top: 2rem;
+}
+
+.app-import-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.app-import-section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-black);
+  margin: 0;
+}
+
+.app-import-instruction {
+  font-size: 1rem;
+  color: var(--text-gray);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.app-did-display {
+  background: #f8f9fa;
+  border: 2px solid var(--border-gray);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--hot-red) #f0f0f0;
+}
+
+.app-did-display::-webkit-scrollbar {
+  height: 8px;
+}
+
+.app-did-display::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.app-did-display::-webkit-scrollbar-thumb {
+  background: var(--hot-red);
+  border-radius: 4px;
+}
+
+.app-did-display::-webkit-scrollbar-thumb:hover {
+  background: #c00;
+}
+
+.app-did-text {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', 'Source Code Pro', monospace;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  color: var(--text-black);
+  word-break: break-word;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  display: block;
+  margin: 0;
+  letter-spacing: 0.025em;
+  font-weight: 400;
+  min-width: min-content;
+}
+
+.app-did-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.app-copy-did-button,
+.app-email-did-button {
+  padding: 0.75rem 1.5rem;
+  background: var(--hot-red);
+  color: white;
+  border: 2px solid var(--hot-red);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Epilogue', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.app-copy-did-button:hover:not(:disabled),
+.app-email-did-button:hover:not(:disabled) {
+  background: white;
+  color: var(--hot-red);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 19, 21, 0.2);
+}
+
+.app-copy-did-button:disabled,
+.app-email-did-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.app-error-message,
+.app-success-message {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.app-error-message {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+}
+
+.app-success-message {
+  background: #efe;
+  border: 1px solid #cfc;
+  color: #3c3;
+}
+
+/* UCAN File Input Styles */
+.app-file-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.app-ucan-dropzone {
+  border: 2px dashed var(--border-gray);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fafafa;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.app-ucan-dropzone:hover {
+  border-color: var(--hot-red);
+  background: #fff5f5;
+}
+
+.app-ucan-dropzone.dragging {
+  border-color: var(--hot-red);
+  background: #fff5f5;
+  border-style: solid;
+}
+
+.app-ucan-dropzone.has-file {
+  border-color: var(--hot-red);
+  border-style: solid;
+  background: white;
+  padding: 1rem;
+}
+
+.app-ucan-dropzone-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.app-ucan-dropzone-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-black);
+  margin-bottom: 0.5rem;
+}
+
+.app-ucan-dropzone-hint {
+  font-size: 0.875rem;
+  color: var(--text-gray);
+  margin: 0;
+}
+
+.app-ucan-file-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+.app-ucan-file-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.app-ucan-file-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.app-ucan-file-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-ucan-file-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-ucan-file-size {
+  font-size: 0.75rem;
+  color: var(--text-gray);
+  margin-top: 0.25rem;
+}
+
+.app-ucan-remove-button {
+  background: transparent;
+  border: none;
+  color: var(--text-gray);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.app-ucan-remove-button:hover {
+  background: #fee;
+  color: var(--hot-red);
+}
