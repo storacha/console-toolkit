@@ -239,7 +239,12 @@ export const SpacePickerList = ({
 
   const content = spacesToShow.map((space, index) => {
     if (renderItem) {
-      return renderItem(space, index)
+      const item = renderItem(space, index)
+      // Ensure the item has a key
+      if (React.isValidElement(item) && item.key) {
+        return item
+      }
+      return <React.Fragment key={space.did()}>{item}</React.Fragment>
     }
     return (
       <div

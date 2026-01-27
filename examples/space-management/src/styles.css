@@ -1651,119 +1651,316 @@ body {
   cursor: not-allowed;
 }
 
-/* Plan Selection Styles */
-.app-plans-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+/* Settings Page Styles */
+.app-settings-section {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 2px solid var(--hot-red);
+  border-radius: 0.75rem;
+  background: white;
 }
 
-.app-plans-header {
+.app-settings-section h3 {
+  color: var(--hot-red);
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Epilogue', sans-serif;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+/* Rewards Section */
+.app-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.app-reward-card {
+  padding: 0.75rem;
+  border: 2px solid var(--hot-red);
+  border-radius: 0.75rem;
+  background: white;
   text-align: center;
-  margin-bottom: 3rem;
 }
 
-.app-plans-title {
-  font-size: 2.5rem;
+.app-reward-card h4 {
+  color: var(--hot-red);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: 'Epilogue', sans-serif;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.app-reward-value {
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-black);
+  font-family: 'Epilogue', sans-serif;
+}
+
+.app-rewards-info {
+  padding: 0.75rem;
+  background: var(--hot-yellow-light);
+  border: 2px solid var(--hot-red);
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.app-rewards-info h4 {
+  color: var(--hot-red);
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: 'Epilogue', sans-serif;
+  margin-bottom: 0.5rem;
+}
+
+.app-rewards-info p {
+  color: var(--text-black);
+  font-size: 0.75rem;
+  font-family: 'Epilogue', sans-serif;
+  line-height: 1.5;
+}
+
+.app-referral-link {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.app-referral-link-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-gray);
+  border-radius: 0.5rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+  background: white;
+  color: var(--text-black);
+}
+
+.app-referral-link-input:focus {
+  outline: none;
+  border-color: var(--hot-red);
+}
+
+.app-referral-link-placeholder {
+  padding: 0.75rem;
+  background: var(--hot-yellow-light);
+  border: 2px solid var(--hot-red);
+  border-radius: 0.5rem;
+  color: var(--text-black);
+  font-size: 0.75rem;
+  font-family: 'Epilogue', sans-serif;
+  text-align: center;
+}
+
+.app-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--hot-red);
+  background: var(--hot-red);
+  color: white;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-family: 'Epilogue', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.app-copy-button:hover {
+  background: white;
+  color: var(--hot-red);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 19, 21, 0.3);
+}
+
+/* Account Overview */
+.app-account-email {
+  font-size: 0.875rem;
+  color: var(--text-black);
+  font-family: 'Epilogue', sans-serif;
+  margin-bottom: 0.75rem;
+}
+
+.app-account-plan-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-plan-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-black);
+  font-family: 'Epilogue', sans-serif;
+}
+
+.app-link-button {
+  display: inline-block;
+  color: var(--hot-red);
+  text-decoration: underline;
+  font-size: 0.75rem;
+  font-family: 'Epilogue', sans-serif;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.app-link-button:hover {
+  color: var(--hot-red);
+  text-decoration: none;
+}
+
+/* Usage Section */
+.app-usage-total {
+  margin-bottom: 0.75rem;
+  font-family: 'Epilogue', sans-serif;
+}
+
+.app-usage-allocated {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-black);
+}
+
+.app-usage-limit {
+  font-size: 0.75rem;
+  color: var(--text-gray);
+}
+
+.app-usage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Epilogue', sans-serif;
+}
+
+.app-usage-table tbody tr {
+  border-bottom: 1px solid var(--border-gray);
+}
+
+.app-usage-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.app-usage-space-did {
+  padding: 0.5rem 0;
+  font-family: monospace;
+  font-size: 0.625rem;
+  color: var(--text-black);
+  word-break: break-all;
+}
+
+.app-usage-space-total {
+  padding: 0.5rem 0;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--text-black);
+}
+
+/* Change Plan Page - Plan Cards */
+.app-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
-.app-plans-description {
-  font-size: 1.125rem;
-  color: var(--text-gray);
-  line-height: 1.6;
+@media (max-width: 1024px) {
+  .app-plans-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.app-plans-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
+@media (max-width: 640px) {
+  .app-plans-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .app-plan-card {
+  padding: 1rem;
+  border: 2px solid var(--hot-red);
+  border-radius: 0.75rem;
   background: white;
-  border: 2px solid var(--border-gray);
-  border-radius: 1.5rem;
-  padding: 2rem;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.app-plan-card:hover {
-  border-color: var(--hot-red);
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(233, 19, 21, 0.15);
+  gap: 0.75rem;
 }
 
 .app-plan-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
 }
 
-.app-plan-name {
-  font-size: 1.5rem;
+.app-plan-header h3 {
+  color: var(--hot-red);
+  font-size: 1.125rem;
   font-weight: 700;
-  color: var(--text-black);
+  font-family: 'Epilogue', sans-serif;
+  margin: 0;
 }
 
-.app-plan-peppers {
-  font-size: 1.5rem;
+.app-plan-header span {
+  font-size: 1rem;
 }
 
 .app-plan-price {
-  font-size: 2rem;
+  font-size: 1.125rem;
   font-weight: 700;
-  color: var(--hot-red);
-  margin-bottom: 1.5rem;
-}
-
-.app-plan-features {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex: 1;
-}
-
-.app-plan-feature {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.app-plan-feature strong {
-  font-size: 1rem;
   color: var(--text-black);
-  font-weight: 600;
+  font-family: 'Epilogue', sans-serif;
 }
 
-.app-plan-feature span {
-  font-size: 0.875rem;
-  color: var(--text-gray);
+.app-plan-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.app-plan-details p {
+  font-size: 0.75rem;
+  color: var(--text-black);
+  font-family: 'Epilogue', sans-serif;
+  margin: 0;
+}
+
+.app-plan-current {
+  padding: 0.5rem 0.75rem;
+  background: var(--hot-yellow-light);
+  border: 2px solid var(--hot-red);
+  border-radius: 0.5rem;
+  color: var(--hot-red);
+  font-weight: 600;
+  font-family: 'Epilogue', sans-serif;
+  font-size: 0.75rem;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .app-plan-button {
-  width: 100%;
-  padding: 1rem 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--hot-red);
   background: var(--hot-red);
   color: white;
-  border: 2px solid var(--hot-red);
-  border-radius: 0.75rem;
-  font-size: 1rem;
+  border-radius: 9999px;
   font-weight: 600;
   font-family: 'Epilogue', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
   cursor: pointer;
   transition: all 0.2s;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  width: 100%;
 }
 
 .app-plan-button:hover:not(:disabled) {
@@ -1774,6 +1971,122 @@ body {
 }
 
 .app-plan-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Billing Admin */
+.app-billing-admin {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 2px solid var(--hot-red);
+  border-radius: 0.75rem;
+  background: white;
+}
+
+.app-billing-admin h3 {
+  color: var(--hot-red);
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Epilogue', sans-serif;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+.app-billing-admin p {
+  color: var(--text-black);
+  font-size: 0.75rem;
+  font-family: 'Epilogue', sans-serif;
+  margin-bottom: 0.75rem;
+}
+
+.app-billing-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--hot-red);
+  background: var(--hot-red);
+  color: white;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-family: 'Epilogue', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.app-billing-button:hover:not(:disabled) {
+  background: white;
+  color: var(--hot-red);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 19, 21, 0.3);
+}
+
+.app-billing-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.app-delegate-form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.app-delegate-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-black);
+  font-family: 'Epilogue', sans-serif;
+}
+
+.app-delegate-form input[type="email"] {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-gray);
+  border-radius: 0.5rem;
+  font-family: 'Epilogue', sans-serif;
+  font-size: 0.75rem;
+  background: white;
+  color: var(--text-black);
+}
+
+.app-delegate-form input[type="email"]:focus {
+  outline: none;
+  border-color: var(--hot-red);
+}
+
+.app-delegate-form button[type="submit"] {
+  align-self: flex-start;
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--hot-red);
+  background: var(--hot-red);
+  color: white;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-family: 'Epilogue', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.app-delegate-form button[type="submit"]:hover:not(:disabled) {
+  background: white;
+  color: var(--hot-red);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 19, 21, 0.3);
+}
+
+.app-delegate-form button[type="submit"]:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }

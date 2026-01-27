@@ -11,5 +11,6 @@ export * from './hooks/useStorachaAuth.js'
 export * from './providers/Provider.js'
 export * from './components/space/index.js'
 export * from './components/upload/index.js'
+export * from './components/settings/index.js'
 
 
