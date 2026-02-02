@@ -22,7 +22,7 @@ const DEFAULT_GATEWAY_HOST = 'https://w3s.link'
 const DEFAULT_GATEWAY_DID = 'did:web:w3s.link'
 const DEFAULT_PROVIDER_DID = 'did:web:web3.storage'
 
-export function Web3MailSpaces() {
+export function Web3MailSpaces({ onNavigateToSettings }: { onNavigateToSettings?: () => void }) {
   const [{ selectedSpace }, { setSelectedSpace }] = useSpacePickerContext()
   const [viewMode, setViewMode] = useState<ViewMode>('picker')
   const [selectedRoot, setSelectedRoot] = useState<UnknownLink | undefined>()
@@ -43,6 +43,14 @@ export function Web3MailSpaces() {
         >
           ➕ Create Space
         </button>
+        {onNavigateToSettings && (
+          <button
+            onClick={onNavigateToSettings}
+            className="w3m-nav-btn"
+          >
+            ⚙️ Settings
+          </button>
+        )}
         {selectedSpace && (
           <>
             <button

@@ -639,7 +639,7 @@ function SharedRow({ item }: { item: { email: string; capabilities: string[]; de
   )
 }
 
-export function DmailSpaces() {
+export function DmailSpaces({ onNavigateToSettings }: { onNavigateToSettings?: () => void }) {
   const [selectedRoot, setSelectedRoot] = useState<UnknownLink | undefined>(undefined)
   const [showUploadTool, setShowUploadTool] = useState(false)
 
@@ -652,6 +652,38 @@ export function DmailSpaces() {
 
   return (
     <section className="space-demo">
+      {onNavigateToSettings && (
+        <nav className="dmail-spaces-nav">
+          <button
+            onClick={() => {
+              // Already on spaces view
+            }}
+            className="dmail-spaces-nav-button active"
+          >
+            <span>📁</span> Spaces
+          </button>
+          <button
+            onClick={() => {
+              // Scroll to space creator if it exists
+              setTimeout(() => {
+                const creatorCard = document.querySelector('.space-card-3d')
+                if (creatorCard) {
+                  creatorCard.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
+              }, 100)
+            }}
+            className="dmail-spaces-nav-button"
+          >
+            <span>➕</span> Create Space
+          </button>
+          <button
+            onClick={onNavigateToSettings}
+            className="dmail-spaces-nav-button"
+          >
+            <span>⚙️</span> Settings
+          </button>
+        </nav>
+      )}
       <SpaceEnsurer
         renderNoSpaces={() => <SpaceCreatorCard />}
         renderCreator={() => <SpaceCreatorCard />}
