@@ -1,8 +1,48 @@
 import { useState, useEffect, FormEvent } from 'react'
-import { useStorachaAuth, StorachaAuth } from '@storacha/console-toolkit-react'
+import { 
+  useStorachaAuth, 
+  StorachaAuth,
+  SettingsProvider,
+  RewardsSection,
+  AccountOverview,
+  UsageSection,
+  AccountManagement,
+  ChangePlan,
+  useSettingsContext,
+  useW3,
+} from '@storacha/console-toolkit-react'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { DmailSpaces } from './DmailSpaces'
+
+// Type assertions for sub-components
+const RewardsSectionTyped = RewardsSection as typeof RewardsSection & {
+  Referred: any
+  USDCredits: any
+  RachaPoints: any
+  Info: any
+  ReferralLink: any
+  ReferralsList: any
+}
+const AccountOverviewTyped = AccountOverview as typeof AccountOverview & {
+  Email: any
+  Plan: any
+  ChangePlanButton: any
+}
+const UsageSectionTyped = UsageSection as typeof UsageSection & {
+  Total: any
+  SpacesList: any
+  SpaceItem: any
+}
+const AccountManagementTyped = AccountManagement as typeof AccountManagement & {
+  DeleteButton: any
+}
+const ChangePlanTyped = ChangePlan as typeof ChangePlan & {
+  PlanSection: any
+  BillingAdmin: any
+  CustomerPortalLink: any
+  DelegateForm: any
+}
 
 export function DmailSubmitted() {
   const auth = useStorachaAuth()
@@ -64,6 +104,7 @@ export function DmailSubmitted() {
 
 export function AuthenticatedContent() {
   const auth = useStorachaAuth()
+  const [viewMode, setViewMode] = useState<'spaces' | 'settings' | 'change-plan'>('spaces')
 
   const userEmail = auth.currentUser?.email || null
 
@@ -133,9 +174,10 @@ export function AuthenticatedContent() {
             </button>
           </div>
 
-          <DmailSpaces />
-
-          <div className="features-grid-3d">
+          {viewMode === 'spaces' && (
+            <>
+              <DmailSpaces onNavigateToSettings={() => setViewMode('settings')} />
+              <div className="features-grid-3d">
             <div className="feature-card-3d">
               <div className="feature-icon-3d">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -166,12 +208,442 @@ export function AuthenticatedContent() {
               <p className="feature-desc">End-to-end encrypted communications</p>
             </div>
           </div>
+            </>
+          )}
+
+          {viewMode === 'settings' && (
+            <SettingsSection 
+              onNavigateToChangePlan={() => setViewMode('change-plan')} 
+              onNavigateToSpaces={() => setViewMode('spaces')}
+            />
+          )}
+
+          {viewMode === 'change-plan' && (
+            <ChangePlanView onBack={() => setViewMode('settings')} />
+          )}
 
         </div>
       </main>
 
       <Footer />
     </div>
+  )
+}
+
+function SettingsSection({ onNavigateToChangePlan, onNavigateToSpaces }: { onNavigateToChangePlan: () => void; onNavigateToSpaces: () => void }) {
+  const referralsServiceURL = typeof import.meta !== 'undefined' && (import.meta as any).env 
+    ? (import.meta as any).env.VITE_REFERRALS_SERVICE_URL 
+    : undefined
+
+  return (
+    <SettingsProvider
+      referralsServiceURL={referralsServiceURL}
+      referralURL="http://storacha.network/referred"
+    >
+      <nav className="dmail-spaces-nav">
+        <button
+          onClick={onNavigateToSpaces}
+          className="dmail-spaces-nav-button"
+        >
+          <span>📁</span> Spaces
+        </button>
+        <button
+          onClick={() => {
+            onNavigateToSpaces()
+            setTimeout(() => {
+              const creatorCard = document.querySelector('.space-card-3d')
+              if (creatorCard) {
+                creatorCard.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            }, 100)
+          }}
+          className="dmail-spaces-nav-button"
+        >
+          <span>➕</span> Create Space
+        </button>
+        <button
+          className="dmail-spaces-nav-button active"
+        >
+          <span>⚙️</span> Settings
+        </button>
+      </nav>
+      <SettingsSectionContent onNavigateToChangePlan={onNavigateToChangePlan} />
+    </SettingsProvider>
+  )
+}
+
+function SettingsSectionContent({ onNavigateToChangePlan }: { onNavigateToChangePlan: () => void }) {
+  const [{ referrals = [], referralLink, refcodeLoading, accountEmail, plan, usage, planLoading, usageLoading }, { copyReferralLink }] = useSettingsContext()
+  const referralsServiceURL = (import.meta as any).env?.VITE_REFERRALS_SERVICE_URL
+  
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  }
+
+  const MAX_REFERRALS = 11
+  const MAX_CREDITS = 460
+  const referred = referrals.length
+  const credits = 0
+  const points = 0
+
+  const PLANS: Record<string, { name: string; limit: number }> = {
+    'did:web:starter.storacha.network': { name: 'Starter', limit: 5 * 1024 * 1024 * 1024 },
+    'did:web:lite.storacha.network': { name: 'Lite', limit: 100 * 1024 * 1024 * 1024 },
+    'did:web:business.storacha.network': { name: 'Business', limit: 2 * 1024 * 1024 * 1024 * 1024 },
+  }
+
+  const product = plan?.product
+  const planName = product && PLANS[product] ? PLANS[product].name : 'Unknown'
+  const allocated = Object.values(usage?.spaces ?? {}).reduce((total, space) => total + space.total, 0)
+  const limit = plan?.product ? PLANS[plan.product]?.limit ?? 0 : 0
+
+  const spaces = usage ? Object.entries(usage.spaces)
+    .sort((a, b) => b[1].total - a[1].total)
+    .map(([spaceDID, data]) => ({
+      space: spaceDID,
+      total: data.total,
+    })) : []
+
+  return (
+    <div className="dmail-settings-section">
+      <div className="dmail-settings-header">
+        <h2>Settings</h2>
+      </div>
+
+      <RewardsSectionTyped>
+        <div className="dmail-settings-subsection">
+          <h3>Rewards</h3>
+          <div className="dmail-rewards-grid">
+            <RewardsSectionTyped.Referred>
+              <div className="dmail-reward-card">
+                <h4>Referred</h4>
+                <div className="dmail-reward-value">{referred} / {MAX_REFERRALS}</div>
+              </div>
+            </RewardsSectionTyped.Referred>
+            <RewardsSectionTyped.USDCredits>
+              <div className="dmail-reward-card">
+                <h4>USD Credits</h4>
+                <div className="dmail-reward-value">{credits} / {MAX_CREDITS}</div>
+              </div>
+            </RewardsSectionTyped.USDCredits>
+            <RewardsSectionTyped.RachaPoints>
+              <div className="dmail-reward-card">
+                <h4>Racha Points</h4>
+                <div className="dmail-reward-value">{points}</div>
+              </div>
+            </RewardsSectionTyped.RachaPoints>
+          </div>
+          <RewardsSectionTyped.Info>
+            <div className="dmail-rewards-info">
+              <h4>Earn Free Storage and Racha Points!</h4>
+              <p>Turn your friends into Lite or Business Rachas and receive up to 16 months of Lite and 3 months of Business for free! You can also earn Racha Points.</p>
+            </div>
+          </RewardsSectionTyped.Info>
+          <RewardsSectionTyped.ReferralLink onClick={copyReferralLink}>
+            {refcodeLoading ? (
+              <div className="dmail-loading-state">Loading...</div>
+            ) : referralLink ? (
+              <div className="dmail-referral-link">
+                <input type="text" readOnly value={referralLink} className="dmail-referral-link-input" />
+                <button onClick={copyReferralLink} className="dmail-copy-button">📋 Copy</button>
+              </div>
+            ) : (
+              <div className="dmail-referral-link-placeholder">
+                {referralsServiceURL ? 'No referral link available. Click to create one.' : 'Referrals service not configured. Set VITE_REFERRALS_SERVICE_URL to enable referral links.'}
+              </div>
+            )}
+          </RewardsSectionTyped.ReferralLink>
+        </div>
+      </RewardsSectionTyped>
+
+      <AccountOverviewTyped>
+        <div className="dmail-settings-subsection">
+          <h3>Plan</h3>
+          <AccountOverviewTyped.Email>
+            <div className="dmail-account-email">{accountEmail}</div>
+          </AccountOverviewTyped.Email>
+          <div className="dmail-account-plan-row">
+            <AccountOverviewTyped.Plan>
+              <span className="dmail-plan-name">{planName}</span>
+            </AccountOverviewTyped.Plan>
+            <AccountOverviewTyped.ChangePlanButton
+              onClick={onNavigateToChangePlan}
+              className="dmail-link-button"
+            >
+              change
+            </AccountOverviewTyped.ChangePlanButton>
+          </div>
+        </div>
+      </AccountOverviewTyped>
+
+      <UsageSectionTyped>
+        <div className="dmail-settings-subsection">
+          <h3>Usage</h3>
+          {usageLoading ? (
+            <div className="dmail-loading-state">Loading usage...</div>
+          ) : (
+            <>
+              <UsageSectionTyped.Total>
+                <div className="dmail-usage-total">
+                  <span className="dmail-usage-allocated">{formatFileSize(allocated)}</span>
+                  <span className="dmail-usage-limit"> of {limit === Infinity ? 'Unlimited' : formatFileSize(limit)}</span>
+                </div>
+              </UsageSectionTyped.Total>
+              <UsageSectionTyped.SpacesList>
+                <table className="dmail-usage-table">
+                  <tbody>
+                    {spaces.map((space) => (
+                      <tr key={space.space}>
+                        <td className="dmail-usage-space-did">{space.space}</td>
+                        <td className="dmail-usage-space-total">{formatFileSize(space.total)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </UsageSectionTyped.SpacesList>
+            </>
+          )}
+        </div>
+      </UsageSectionTyped>
+
+      <AccountManagementTyped>
+        <div className="dmail-settings-subsection">
+          <h3>Account Management</h3>
+          <AccountManagementTyped.DeleteButton className="dmail-danger-button">
+            Request Account Deletion
+          </AccountManagementTyped.DeleteButton>
+        </div>
+      </AccountManagementTyped>
+    </div>
+  )
+}
+
+function ChangePlanView({ onBack }: { onBack: () => void }) {
+  const [{ accounts }] = useW3()
+  const account = accounts[0]
+
+  if (!account) return null
+
+  return (
+    <SettingsProvider>
+      <ChangePlanViewContent onBack={onBack} account={account} />
+    </SettingsProvider>
+  )
+}
+
+function ChangePlanViewContent({ onBack, account }: { onBack: () => void; account: any }) {
+  const [{ plan, planLoading }] = useSettingsContext()
+
+  const currentPlanID = plan?.product
+  const planRanks: Record<string, number> = {
+    'did:web:starter.storacha.network': 0,
+    'did:web:lite.storacha.network': 1,
+    'did:web:business.storacha.network': 2,
+  }
+  const buttonText = (currentPlan: string, newPlan: string) =>
+    planRanks[currentPlan] > planRanks[newPlan] ? 'Downgrade' : 'Upgrade'
+
+  return (
+    <div className="dmail-settings-section">
+      <div className="dmail-settings-header">
+        <button onClick={onBack} className="dmail-back-button">← Back to Settings</button>
+        <h2>Change Plan</h2>
+      </div>
+
+      <ChangePlanTyped>
+        <div className="dmail-plans-grid">
+          <ChangePlanTyped.PlanSection
+            planID="did:web:starter.storacha.network"
+            planName="Starter"
+            planLabel="🌶️"
+            flatFee={0}
+            flatFeeAllotment={5}
+            perGbFee={0.15}
+          >
+            <div className="dmail-plan-card">
+              <div className="dmail-plan-header">
+                <h3>Starter</h3>
+                <span>🌶️</span>
+              </div>
+              <div className="dmail-plan-price">$0/mo</div>
+              <div className="dmail-plan-details">
+                <p>5GB storage</p>
+                <p>Additional at $0.15/GB</p>
+                <p>5GB egress</p>
+                <p>Additional at $0.15/GB</p>
+              </div>
+              {currentPlanID === 'did:web:starter.storacha.network' ? (
+                <div className="dmail-plan-current">Current Plan</div>
+              ) : (
+                <button 
+                  disabled={planLoading} 
+                  className="dmail-plan-button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const el = e.currentTarget.closest('[data-plan-id]') as HTMLElement
+                    if (el) {
+                      el.click()
+                    }
+                  }}
+                >
+                  {planLoading ? 'Loading...' : currentPlanID ? buttonText(currentPlanID, 'did:web:starter.storacha.network') : 'Select'}
+                </button>
+              )}
+            </div>
+          </ChangePlanTyped.PlanSection>
+
+          <ChangePlanTyped.PlanSection
+            planID="did:web:lite.storacha.network"
+            planName="Lite"
+            planLabel="🌶️🌶️"
+            flatFee={10}
+            flatFeeAllotment={100}
+            perGbFee={0.05}
+          >
+            <div className="dmail-plan-card">
+              <div className="dmail-plan-header">
+                <h3>Lite</h3>
+                <span>🌶️🌶️</span>
+              </div>
+              <div className="dmail-plan-price">$10/mo</div>
+              <div className="dmail-plan-details">
+                <p>100GB storage</p>
+                <p>Additional at $0.05/GB</p>
+                <p>100GB egress</p>
+                <p>Additional at $0.05/GB</p>
+              </div>
+              {currentPlanID === 'did:web:lite.storacha.network' ? (
+                <div className="dmail-plan-current">Current Plan</div>
+              ) : (
+                <button 
+                  disabled={planLoading} 
+                  className="dmail-plan-button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const el = e.currentTarget.closest('[data-plan-id]') as HTMLElement
+                    if (el) {
+                      el.click()
+                    }
+                  }}
+                >
+                  {planLoading ? 'Loading...' : currentPlanID ? buttonText(currentPlanID, 'did:web:lite.storacha.network') : 'Upgrade'}
+                </button>
+              )}
+            </div>
+          </ChangePlanTyped.PlanSection>
+
+          <ChangePlanTyped.PlanSection
+            planID="did:web:business.storacha.network"
+            planName="Business"
+            planLabel="🔥 Best Value 🔥"
+            flatFee={100}
+            flatFeeAllotment={2000}
+            perGbFee={0.03}
+          >
+            <div className="dmail-plan-card">
+              <div className="dmail-plan-header">
+                <h3>Business</h3>
+                <span>🔥 Best Value 🔥</span>
+              </div>
+              <div className="dmail-plan-price">$100/mo</div>
+              <div className="dmail-plan-details">
+                <p>2TB storage</p>
+                <p>Additional at $0.03/GB</p>
+                <p>2TB egress</p>
+                <p>Additional at $0.03/GB</p>
+              </div>
+              {currentPlanID === 'did:web:business.storacha.network' ? (
+                <div className="dmail-plan-current">Current Plan</div>
+              ) : (
+                <button 
+                  disabled={planLoading} 
+                  className="dmail-plan-button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const el = e.currentTarget.closest('[data-plan-id]') as HTMLElement
+                    if (el) {
+                      el.click()
+                    }
+                  }}
+                >
+                  {planLoading ? 'Loading...' : currentPlanID ? buttonText(currentPlanID, 'did:web:business.storacha.network') : 'Upgrade'}
+                </button>
+              )}
+            </div>
+          </ChangePlanTyped.PlanSection>
+        </div>
+
+        <ChangePlanTyped.BillingAdmin>
+          <div className="dmail-billing-admin">
+            <h3>Billing Administration</h3>
+            <p>Access Billing Admin Portal</p>
+            <BillingPortalButton accountDID={account.did()} />
+            <BillingDelegateForm accountDID={account.did()} />
+          </div>
+        </ChangePlanTyped.BillingAdmin>
+      </ChangePlanTyped>
+    </div>
+  )
+}
+
+function BillingPortalButton({ accountDID }: { accountDID: string }) {
+  const [customerPortalLink, setCustomerPortalLink] = useState<string>()
+  const [generating, setGenerating] = useState(false)
+  const [{ client, accounts }] = useW3()
+  const account = accounts[0]
+
+  const generateLink = async () => {
+    if (!client || !account) return
+    setGenerating(true)
+    try {
+      const result = await account.plan.createAdminSession(accountDID as any, window.location.href)
+      if (result.ok) {
+        setCustomerPortalLink(result.ok.url)
+      }
+    } catch (error) {
+      console.error('Error creating admin session:', error)
+    } finally {
+      setGenerating(false)
+    }
+  }
+
+  if (customerPortalLink) {
+    return (
+      <div>
+        <button onClick={generateLink} disabled={generating} className="dmail-billing-button">
+          🔄
+        </button>
+        <a href={customerPortalLink} target="_blank" rel="noopener noreferrer" className="dmail-billing-button">
+          Open Billing Portal →
+        </a>
+      </div>
+    )
+  }
+
+  return (
+    <ChangePlanTyped.CustomerPortalLink accountDID={accountDID as any}>
+      <button onClick={generateLink} disabled={generating} className="dmail-billing-button">
+        {generating ? 'Generating...' : 'Generate Link'}
+      </button>
+    </ChangePlanTyped.CustomerPortalLink>
+  )
+}
+
+function BillingDelegateForm({ accountDID }: { accountDID: string }) {
+  return (
+    <ChangePlanTyped.DelegateForm accountDID={accountDID as any}>
+      <form className="dmail-delegate-form">
+        <label>
+          Delegate Billing Access
+          <input type="email" placeholder="To Email" required />
+        </label>
+        <button type="submit">DELEGATE</button>
+      </form>
+    </ChangePlanTyped.DelegateForm>
   )
 }
 

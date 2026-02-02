@@ -1576,3 +1576,537 @@ body {
   cursor: pointer;
   z-index: 2;
 }
+
+/* Settings Section Styles */
+.dmail-settings-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(233, 19, 21, 0.3);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  margin-top: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.dmail-settings-header {
+  margin-bottom: 1.5rem;
+}
+
+.dmail-settings-header h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #E91315 0%, #ff4757 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.dmail-settings-subsection {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(233, 19, 21, 0.2);
+  border-radius: 1rem;
+}
+
+.dmail-settings-subsection h3 {
+  color: #E91315;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.dmail-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dmail-reward-card {
+  padding: 1rem;
+  border: 2px solid rgba(233, 19, 21, 0.3);
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.dmail-reward-card h4 {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.dmail-reward-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.dmail-rewards-info {
+  padding: 1rem;
+  background: rgba(233, 19, 21, 0.1);
+  border: 2px solid rgba(233, 19, 21, 0.3);
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dmail-rewards-info h4 {
+  color: #E91315;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.dmail-rewards-info p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.dmail-referral-link {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.dmail-referral-link-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(233, 19, 21, 0.3);
+  border-radius: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.dmail-referral-link-input:focus {
+  outline: none;
+  border-color: rgba(233, 19, 21, 0.6);
+}
+
+.dmail-referral-link-placeholder {
+  padding: 1rem;
+  background: rgba(233, 19, 21, 0.1);
+  border: 2px solid rgba(233, 19, 21, 0.3);
+  border-radius: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.dmail-copy-button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #E91315;
+  background: #E91315;
+  color: white;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.dmail-copy-button:hover {
+  background: white;
+  color: #E91315;
+  transform: translateY(-2px);
+}
+
+.dmail-account-email {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1rem;
+}
+
+.dmail-account-plan-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dmail-plan-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.dmail-link-button {
+  display: inline-block;
+  color: #E91315;
+  text-decoration: underline;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.dmail-link-button:hover {
+  color: #ff4757;
+  text-decoration: none;
+}
+
+.dmail-usage-total {
+  margin-bottom: 1rem;
+}
+
+.dmail-usage-allocated {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.dmail-usage-limit {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dmail-usage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dmail-usage-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dmail-usage-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.dmail-usage-space-did {
+  padding: 0.75rem 0;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  word-break: break-all;
+}
+
+.dmail-usage-space-total {
+  padding: 0.75rem 0;
+  text-align: right;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dmail-danger-button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.15);
+  color: #ff6b6b;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dmail-danger-button:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.7);
+  transform: translateY(-2px);
+}
+
+.dmail-loading-state {
+  padding: 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Ensure space-demo and space-grid match authenticated-content-3d width */
+.space-demo {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.space-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Navigation Bar inside Spaces */
+.dmail-spaces-nav {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin: 0 auto 1rem;
+  max-width: 1200px;
+  width: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(233, 19, 21, 0.22);
+  border-radius: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dmail-spaces-nav-button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.75rem 1.25rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dmail-spaces-nav-button:hover {
+  background: rgba(233, 19, 21, 0.1);
+  border-color: rgba(233, 19, 21, 0.4);
+  color: white;
+}
+
+.dmail-spaces-nav-button.active {
+  background: #E91315;
+  border-color: #E91315;
+  color: white;
+  box-shadow: 0 4px 15px rgba(233, 19, 21, 0.4);
+}
+
+/* Change Plan Page */
+.dmail-back-button {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.5rem 0;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.2s;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.dmail-back-button:hover {
+  color: white;
+}
+
+.dmail-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .dmail-plans-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dmail-plans-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dmail-plan-card {
+  padding: 1.5rem;
+  border: 2px solid rgba(233, 19, 21, 0.3);
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dmail-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dmail-plan-header h3 {
+  color: #E91315;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.dmail-plan-header span {
+  font-size: 1.25rem;
+}
+
+.dmail-plan-price {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #E91315;
+  line-height: 1;
+}
+
+.dmail-plan-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.dmail-plan-details p {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+.dmail-plan-current {
+  padding: 0.75rem;
+  background: rgba(233, 19, 21, 0.2);
+  border: 2px solid rgba(233, 19, 21, 0.5);
+  border-radius: 0.5rem;
+  color: #E91315;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.dmail-plan-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #E91315;
+  background: #E91315;
+  color: white;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.dmail-plan-button:hover:not(:disabled) {
+  background: white;
+  color: #E91315;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 19, 21, 0.3);
+}
+
+.dmail-plan-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dmail-billing-admin {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 2px solid rgba(233, 19, 21, 0.3);
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dmail-billing-admin h3 {
+  color: #E91315;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+.dmail-billing-admin p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.dmail-billing-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #E91315;
+  background: #E91315;
+  color: white;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dmail-billing-button:hover:not(:disabled) {
+  background: white;
+  color: #E91315;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 19, 21, 0.3);
+}
+
+.dmail-billing-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dmail-delegate-form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dmail-delegate-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dmail-delegate-form input[type="email"] {
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(233, 19, 21, 0.3);
+  border-radius: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 0.875rem;
+}
+
+.dmail-delegate-form input[type="email"]:focus {
+  outline: none;
+  border-color: rgba(233, 19, 21, 0.6);
+}
+
+.dmail-delegate-form button[type="submit"] {
+  align-self: flex-start;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #E91315;
+  background: #E91315;
+  color: white;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dmail-delegate-form button[type="submit"]:hover:not(:disabled) {
+  background: white;
+  color: #E91315;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 19, 21, 0.3);
+}
+
+.dmail-delegate-form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
