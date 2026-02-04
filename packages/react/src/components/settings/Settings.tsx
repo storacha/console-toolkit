@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import React, {
+import {
   useState,
   createContext,
   useContext,
@@ -8,7 +8,7 @@ import React, {
   useEffect,
 } from 'react'
 import { useW3, ContextState } from '../../providers/Provider.js'
-import type { Account, SpaceDID } from '@storacha/ui-core'
+import type { SpaceDID } from '@storacha/ui-core'
 import type { DID as DIDType } from '@ucanto/interface'
 
 /**

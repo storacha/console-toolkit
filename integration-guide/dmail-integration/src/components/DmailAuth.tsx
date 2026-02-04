@@ -108,28 +108,6 @@ export function AuthenticatedContent() {
 
   const userEmail = auth.currentUser?.email || null
 
-  if (!userEmail || !userEmail.endsWith('@dmail.ai')) {
-    return (
-      <div className="dmail-app authenticated-page">
-        <div className="authenticated-background">
-          <div className="bg-gradient-orb orb-1"></div>
-          <div className="bg-gradient-orb orb-2"></div>
-          <div className="bg-gradient-orb orb-3"></div>
-        </div>
-        <Header />
-        <main className="app-main authenticated-main">
-          <div className="authenticated-content-3d">
-            <div className="error-banner" style={{ maxWidth: '600px', margin: '0 auto' }}>
-              <span className="error-icon">⚠️</span>
-              <span>Please authenticate with a Dmail address (e.g. wallet addr@dmail.ai)</span>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
-  }
-
   const walletAddress = userEmail || '0x0000000000000000000000000000000000000000'
   const displayName = `${walletAddress.slice(0, 4)}..${walletAddress.slice(39, 55)}`
 
@@ -164,14 +142,15 @@ export function AuthenticatedContent() {
                   <div className="wallet-badge">✓ Verified</div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="action-section-3d">
+              <div className="action-section-3d">
             <button onClick={auth.logout} className="logout-button-3d">
               <span className="button-text">Sign Out</span>
               <span className="button-shine"></span>
             </button>
+          </div>
+          
+            </div>
           </div>
 
           {viewMode === 'spaces' && (
@@ -273,7 +252,7 @@ function SettingsSection({ onNavigateToChangePlan, onNavigateToSpaces }: { onNav
 }
 
 function SettingsSectionContent({ onNavigateToChangePlan }: { onNavigateToChangePlan: () => void }) {
-  const [{ referrals = [], referralLink, refcodeLoading, accountEmail, plan, usage, planLoading, usageLoading }, { copyReferralLink }] = useSettingsContext()
+  const [{ referrals = [], referralLink, refcodeLoading, accountEmail, plan, usage, usageLoading }, { copyReferralLink }] = useSettingsContext()
   const referralsServiceURL = (import.meta as any).env?.VITE_REFERRALS_SERVICE_URL
   
   const formatFileSize = (bytes: number): string => {
@@ -664,15 +643,15 @@ export function DmailAuthForm() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!auth.email) {
-      setError('Please enter your Dmail address')
-      return
-    }
+    // if (!auth.email) {
+    //   setError('Please enter your Dmail address')
+    //   return
+    // }
 
-    if (!isDmailEmail(auth.email)) {
-      setError('Please use a Dmail address (e.g. wallet addr@dmail.ai)')
-      return
-    }
+    // if (!isDmailEmail(auth.email)) {
+    //   setError('Please use a Dmail address (e.g. wallet addr@dmail.ai)')
+    //   return
+    // }
 
     setError(null)
 
@@ -719,16 +698,16 @@ export function DmailAuthForm() {
                 className="dmail-email-input"
                 required
               />
-              {auth.email && !isDmailEmail(auth.email) && (
+              {/* {auth.email && !isDmailEmail(auth.email) && (
                 <p className="email-error" style={{ color: '#ff6b6b', fontSize: '0.875rem', marginTop: '0.5rem' }}>
                   Please use a Dmail address (e.g. wallet addr@dmail.ai)
                 </p>
-              )}
+              )} */}
             </div>
 
             <button
               type="submit"
-              disabled={auth.isSubmitting || (auth.email ? !isDmailEmail(auth.email) : false)}
+              // disabled={auth.isSubmitting || (auth.email ? !isDmailEmail(auth.email) : false)}
               className="dmail-auth-button"
             >
               {auth.isSubmitting ? 'Authenticating...' : 'Authenticate with Storacha'}

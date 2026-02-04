@@ -1,5 +1,4 @@
 import type { As, Props, Options } from 'ariakit-react-utils'
-import type { ReactNode } from 'react'
 import React, { useMemo } from 'react'
 import { createElement } from 'ariakit-react-utils'
 import { useSettingsContext } from './Settings.js'

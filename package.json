@@ -21,6 +21,7 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "@ucanto/interface": "^11.0.1",
     "@vitejs/plugin-react": "^4.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",

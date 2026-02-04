@@ -1,6 +1,6 @@
 import type { ReactNode, CSSProperties } from 'react'
 
-import React, {
+import {
     useState,
     useEffect,
     createContext,

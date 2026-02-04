@@ -10,7 +10,7 @@ import React, {
 } from 'react'
 import { createElement } from 'ariakit-react-utils'
 import { useW3, ContextState } from '../../providers/Provider.js'
-import type { Space, SpaceDID } from '@storacha/ui-core'
+import type { Space } from '@storacha/ui-core'
 import * as UcantoClient from '@ucanto/client'
 import { HTTP } from '@ucanto/transport'
 import * as CAR from '@ucanto/transport/car'
@@ -321,7 +321,7 @@ export const SpaceCreatorForm = ({
   children,
   ...formProps 
 }: SpaceCreatorFormProps) => {
-  const [{ name, accessType, submitted }, { handleSubmit }] = useSpaceCreatorContext()
+  const [{ submitted }, { handleSubmit }] = useSpaceCreatorContext()
 
   const defaultRenderNameInput = () => (
     <SpaceCreatorNameInput

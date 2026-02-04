@@ -154,7 +154,7 @@ export const SharingToolProvider = ({
 }: SharingToolProps) => {
   const [state] = useW3()
   const { client, spaces } = state
-  const [space, setSpace] = useState<Space | undefined>(
+  const [space] = useState<Space | undefined>(
     propSpace || (spaceDID ? spaces.find(s => s.did() === spaceDID) : undefined)
   )
   const [inputValue, setInputValue] = useState('')
@@ -364,7 +364,7 @@ export const SharingToolForm = ({
   children,
   ...formProps 
 }: SharingToolFormProps) => {
-  const [{ value, isSharing }, { setValue, shareViaEmail, shareViaDID }] = useSharingToolContext()
+  const [{ value, isSharing }, { shareViaEmail, shareViaDID }] = useSharingToolContext()
 
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

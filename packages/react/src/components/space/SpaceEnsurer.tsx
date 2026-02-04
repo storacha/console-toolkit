@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useW3 } from '../../providers/Provider.js'
 import { SpaceCreator } from './SpaceCreator.js'
 

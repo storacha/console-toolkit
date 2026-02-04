@@ -1,7 +1,7 @@
 import type { As, Props, Options } from 'ariakit-react-utils'
 import type { ReactNode, CSSProperties } from 'react'
 
-import React, {
+import {
   useState,
   createContext,
   useContext,
@@ -120,12 +120,12 @@ export interface SpaceListProps {
 /**
  * Main SpaceList component that provides space content listing context
  */
-export const SpaceListProvider = ({ 
+export const SpaceListProvider = ({
   children,
   space: propSpace,
   spaceDID,
   pageSize = 15,
-  onItemSelect,
+  onItemSelect: _onItemSelect,
 }: SpaceListProps) => {
   const [state] = useW3()
   const { client, spaces } = state
@@ -291,7 +291,7 @@ export const SpaceListList = ({
   onItemClick,
   ...divProps 
 }: SpaceListListProps) => {
-  const [{ uploads, isLoading, space }] = useSpaceListContext()
+  const [{ uploads, isLoading }] = useSpaceListContext()
 
   const handleClick = useCallback((root: UnknownLink) => {
     onItemClick?.(root)

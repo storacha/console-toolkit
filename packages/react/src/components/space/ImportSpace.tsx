@@ -121,7 +121,7 @@ export const ImportSpaceProvider = ({
   onError,
 }: ImportSpaceProps) => {
   const [state] = useW3()
-  const { client, accounts, spaces } = state
+  const { client, spaces } = state
   const [ucanValue, setUcanValue] = useState('')
   const [isImporting, setIsImporting] = useState(false)
   const [error, setError] = useState<string>()
@@ -337,7 +337,7 @@ export const ImportSpaceForm = ({
   children,
   ...formProps
 }: ImportSpaceFormProps) => {
-  const [{ ucanValue, isImporting }, { setUcanValue, importUCAN }] =
+  const [{ ucanValue, isImporting }, { importUCAN }] =
     useImportSpaceContext()
 
   const handleSubmit = useCallback(
