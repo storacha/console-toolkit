@@ -1,7 +1,7 @@
 import type { As, Props, Options } from 'ariakit-react-utils'
 import type { ReactNode, CSSProperties } from 'react'
 
-import React, {
+import {
   useState,
   createContext,
   useContext,
@@ -118,7 +118,7 @@ export const FileViewerProvider = ({
 }: FileViewerProps) => {
   const [state] = useW3()
   const { client, spaces } = state
-  const [space, setSpace] = useState<Space | undefined>(
+  const [space] = useState<Space | undefined>(
     propSpace || (spaceDID ? spaces.find(s => s.did() === spaceDID) : undefined)
   )
   const [root, setRootState] = useState<UnknownLink | undefined>(

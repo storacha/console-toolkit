@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import type { Space, UnknownLink } from '@storacha/ui-core'
 import {
   SpacePicker,
@@ -8,15 +8,17 @@ import {
   SharingTool,
   UploadTool,
   PlanGate,
+  ImportSpace,
   useSpacePickerContext,
   useSpaceCreatorContext,
   useSharingToolContext,
   useFileViewerContext,
   useUploadToolContext,
   usePlanGateContext,
+  useImportSpaceContext,
 } from '@storacha/console-toolkit-react'
 
-type ViewMode = 'picker' | 'creator' | 'upload' | 'list' | 'viewer' | 'sharing'
+type ViewMode = 'picker' | 'creator' | 'upload' | 'list' | 'viewer' | 'sharing' | 'import'
 
 const DEFAULT_GATEWAY_HOST = 'https://w3s.link'
 const DEFAULT_GATEWAY_DID = 'did:web:w3s.link'
@@ -42,6 +44,12 @@ export function Web3MailSpaces({ onNavigateToSettings }: { onNavigateToSettings?
           className={`w3m-nav-btn ${viewMode === 'creator' ? 'active' : ''}`}
         >
           ➕ Create Space
+        </button>
+        <button
+          onClick={() => setViewMode('import')}
+          className={`w3m-nav-btn ${viewMode === 'import' ? 'active' : ''}`}
+        >
+          📥 Import
         </button>
         {onNavigateToSettings && (
           <button
@@ -124,7 +132,186 @@ export function Web3MailSpaces({ onNavigateToSettings }: { onNavigateToSettings?
         {viewMode === 'sharing' && selectedSpace && (
           <SharingView space={selectedSpace} />
         )}
+
+        {viewMode === 'import' && (
+          <ImportSpace
+            onImport={(space) => {
+              setSelectedSpace(space)
+              setViewMode('list')
+            }}
+          >
+            <Web3MailImportView />
+          </ImportSpace>
+        )}
       </main>
+    </div>
+  )
+}
+
+function Web3MailImportView() {
+  const [{ userDID, isImporting, error, success }, { copyDID, emailDID, importUCAN, setUcanValue }] = useImportSpaceContext()
+  const [copied, setCopied] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleCopyDID = useCallback(async () => {
+    try {
+      await copyDID()
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy DID:', err)
+    }
+  }, [copyDID])
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }, [])
+
+  const handleFileImport = useCallback(
+    async (file: File) => {
+      try {
+        await importUCAN(file)
+      } catch (err) {
+        console.error('Failed to import file:', err)
+      }
+    },
+    [importUCAN]
+  )
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragging(false)
+      const files = e.dataTransfer.files
+      if (files?.length) {
+        const file = files[0]
+        if (file.name.endsWith('.ucan') || file.name.endsWith('.car') || file.type === 'application/vnd.ipfs.car') {
+          setSelectedFile(file)
+          setUcanValue('')
+          handleFileImport(file)
+        } else {
+          alert('Please select a .ucan or .car file')
+        }
+      }
+    },
+    [setUcanValue, handleFileImport]
+  )
+
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files
+      if (files?.length) {
+        const file = files[0]
+        setSelectedFile(file)
+        setUcanValue('')
+        handleFileImport(file)
+      }
+    },
+    [setUcanValue, handleFileImport]
+  )
+
+  const handleDropzoneClick = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
+
+  return (
+    <div className="w3m-section">
+      <div className="w3m-section-header">
+        <h2>Import a Space</h2>
+        <p className="w3m-section-desc">Share spaces via DID and UCAN delegation</p>
+      </div>
+      <div className="w3m-import-container">
+        <div className="w3m-import-section">
+          <h3 className="w3m-import-section-title">1. Send your DID to your friend.</h3>
+          {userDID && (
+            <>
+              <div className="w3m-did-display">
+                <code className="w3m-did-text">{userDID}</code>
+              </div>
+              <div className="w3m-did-actions">
+                <button type="button" className="w3m-secondary-btn" onClick={handleCopyDID} title="Copy DID">
+                  <span>📋</span> {copied ? 'Copied!' : 'Copy DID'}
+                </button>
+                <button type="button" className="w3m-secondary-btn" onClick={emailDID} title="Open email with DID">
+                  <span>✉️</span> Email DID
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="w3m-import-section">
+          <h3 className="w3m-import-section-title">2. Import the UCAN they send you.</h3>
+          <p className="w3m-import-instruction">
+            Ask them to create a UCAN in the console or CLI delegating your DID access to their space.
+          </p>
+          <div
+            className={`w3m-ucan-dropzone ${isDragging ? 'dragging' : ''} ${selectedFile ? 'has-file' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={handleDropzoneClick}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".ucan,.car,application/vnd.ipfs.car"
+              className="w3m-file-input-hidden"
+              onChange={handleFileSelect}
+            />
+            {!selectedFile && (
+              <>
+                <div className="w3m-ucan-dropzone-icon">📁</div>
+                <p className="w3m-ucan-dropzone-text">Drag UCAN file here or click to browse</p>
+                <p className="w3m-ucan-dropzone-hint">Supports .ucan and .car files</p>
+              </>
+            )}
+            {selectedFile && (
+              <div className="w3m-ucan-file-preview">
+                <div className="w3m-ucan-file-info">
+                  <div className="w3m-ucan-file-icon">📄</div>
+                  <div className="w3m-ucan-file-details">
+                    <div className="w3m-ucan-file-name">{selectedFile.name}</div>
+                    <div className="w3m-ucan-file-size">{(selectedFile.size / 1024).toFixed(2)} KB</div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="w3m-ucan-remove-btn"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setSelectedFile(null)
+                    if (fileInputRef.current) fileInputRef.current.value = ''
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {error && (
+            <div className="w3m-import-error">
+              <span>⚠️</span> {error}
+            </div>
+          )}
+          {success && (
+            <div className="w3m-import-success">
+              <span>✅</span> {success}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

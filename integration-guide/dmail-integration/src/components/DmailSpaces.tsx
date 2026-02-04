@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import type { UnknownLink } from '@storacha/ui-core'
 
 import {
@@ -10,12 +10,14 @@ import {
   SharingTool,
   UploadTool,
   PlanGate,
+  ImportSpace,
   useSpacePickerContext,
   useSpaceCreatorContext,
   useSpaceListContext,
   useFileViewerContext,
   useSharingToolContext,
   usePlanGateContext,
+  useImportSpaceContext,
 } from '@storacha/console-toolkit-react'
 import { DmailUploadTool } from './DmailUploadTool'
 
@@ -454,7 +456,12 @@ function UploadsPanel({ space, onSelectRoot }: { space: SpaceT | undefined; onSe
           renderEmpty={() => <div className="space-empty">No uploads found in this space.</div>}
           onItemClick={onSelectRoot}
           renderItem={(upload) => (
-            <UploadRow key={upload.root.toString()} root={upload.root} insertedAt={upload.insertedAt} />
+            <UploadRow
+              key={upload.root.toString()}
+              root={upload.root}
+              insertedAt={upload.insertedAt}
+              onSelect={() => onSelectRoot(upload.root)}
+            />
           )}
         />
         <div className="upload-pagination">
@@ -482,17 +489,14 @@ function UploadsStatus() {
   return <div className="space-inline-error">{error}</div>
 }
 
-function UploadRow({ root, insertedAt }: { root: UnknownLink; insertedAt?: string }) {
-  const short = useMemo(() => {
-    const s = root.toString()
-    return `${s.slice(0, 10)}…${s.slice(-8)}`
-  }, [root])
+function UploadRow({ root, insertedAt, onSelect }: { root: UnknownLink; insertedAt?: string; onSelect: () => void }) {
+  const cidString = root.toString()
 
   return (
-    <div className="upload-row">
-      <div className="upload-row-title">{short}</div>
-      <div className="upload-row-sub">{insertedAt ? new Date(insertedAt).toLocaleString() : '—'}</div>
-    </div>
+    <button type="button" className="upload-row" onClick={onSelect}>
+      <div className="upload-row-cid" title={cidString}>{cidString}</div>
+      <div className="upload-row-date">{insertedAt ? new Date(insertedAt).toLocaleString() : '—'}</div>
+    </button>
   )
 }
 
@@ -535,7 +539,15 @@ function FileViewerContent({ onCleared }: { onCleared: () => void }) {
 
       <div className="file-kv">
         <div className="file-k">Gateway URL</div>
-        <div className="file-v"><FileViewer.URL /></div>
+        <div className="file-v">
+          <FileViewer.URL
+            renderURL={(url) => (
+              <a href={url} target="_blank" rel="noopener noreferrer" className="file-viewer-gateway-link">
+                {url}
+              </a>
+            )}
+          />
+        </div>
       </div>
 
       <div className="file-kv">
@@ -639,83 +651,264 @@ function SharedRow({ item }: { item: { email: string; capabilities: string[]; de
   )
 }
 
+function ImportSpacePanel() {
+  const [{ userDID, error, success }, { copyDID, emailDID, importUCAN, setUcanValue }] = useImportSpaceContext()
+  const [copied, setCopied] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleCopyDID = useCallback(async () => {
+    try {
+      await copyDID()
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy DID:', err)
+    }
+  }, [copyDID])
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }, [])
+
+  const handleFileImport = useCallback(
+    async (file: File) => {
+      try {
+        await importUCAN(file)
+      } catch (err) {
+        console.error('Failed to import file:', err)
+      }
+    },
+    [importUCAN]
+  )
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragging(false)
+      const files = e.dataTransfer.files
+      if (files?.length) {
+        const file = files[0]
+        if (file.name.endsWith('.ucan') || file.name.endsWith('.car') || file.type === 'application/vnd.ipfs.car') {
+          setSelectedFile(file)
+          setUcanValue('')
+          handleFileImport(file)
+        } else {
+          alert('Please select a .ucan or .car file')
+        }
+      }
+    },
+    [setUcanValue, handleFileImport]
+  )
+
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files
+      if (files?.length) {
+        const file = files[0]
+        setSelectedFile(file)
+        setUcanValue('')
+        handleFileImport(file)
+      }
+    },
+    [setUcanValue, handleFileImport]
+  )
+
+  const handleDropzoneClick = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
+
+  return (
+    <div className="space-card-3d" id="dmail-import-space">
+      <div className="space-card-header">
+        <h3 className="space-card-title">Import a Space</h3>
+        <p className="space-card-subtitle">Share spaces via DID and UCAN delegation</p>
+      </div>
+      <div className="space-import-container">
+        <div className="space-import-section">
+          <h4 className="space-import-section-title">1. Send your DID to your friend.</h4>
+          {userDID && (
+            <>
+              <div className="space-did-display">
+                <code className="space-did-text">{userDID}</code>
+              </div>
+              <div className="space-did-actions">
+                <button type="button" className="space-secondary-btn" onClick={handleCopyDID} title="Copy DID">
+                  <span>📋</span> {copied ? 'Copied!' : 'Copy DID'}
+                </button>
+                <button type="button" className="space-secondary-btn" onClick={emailDID} title="Open email with DID">
+                  <span>✉️</span> Email DID
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="space-import-section">
+          <h4 className="space-import-section-title">2. Import the UCAN they send you.</h4>
+          <p className="space-import-instruction">
+            Ask them to create a UCAN in the console or CLI delegating your DID access to their space.
+          </p>
+          <div
+            className={`space-ucan-dropzone ${isDragging ? 'dragging' : ''} ${selectedFile ? 'has-file' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={handleDropzoneClick}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".ucan,.car,application/vnd.ipfs.car"
+              className="space-file-input-hidden"
+              onChange={handleFileSelect}
+            />
+            {!selectedFile && (
+              <>
+                <div className="space-ucan-dropzone-icon">📁</div>
+                <p className="space-ucan-dropzone-text">Drag UCAN file here or click to browse</p>
+                <p className="space-ucan-dropzone-hint">Supports .ucan and .car files</p>
+              </>
+            )}
+            {selectedFile && (
+              <div className="space-ucan-file-preview">
+                <div className="space-ucan-file-info">
+                  <div className="space-ucan-file-icon">📄</div>
+                  <div className="space-ucan-file-details">
+                    <div className="space-ucan-file-name">{selectedFile.name}</div>
+                    <div className="space-ucan-file-size">{(selectedFile.size / 1024).toFixed(2)} KB</div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="space-ucan-remove-btn"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setSelectedFile(null)
+                    if (fileInputRef.current) fileInputRef.current.value = ''
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {error && (
+            <div className="space-inline-error">
+              <span>⚠️</span> {error}
+            </div>
+          )}
+          {success && (
+            <div className="space-inline-success">
+              <span>✅</span> {success}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export type DmailSpacesView = 'spaces' | 'create' | 'uploads' | 'import'
+
 export function DmailSpaces({ onNavigateToSettings }: { onNavigateToSettings?: () => void }) {
   const [selectedRoot, setSelectedRoot] = useState<UnknownLink | undefined>(undefined)
   const [showUploadTool, setShowUploadTool] = useState(false)
+  const [view, setView] = useState<DmailSpacesView>('spaces')
 
   const openAdvancedUpload = () => {
     setShowUploadTool(true)
-    setTimeout(() => {
-      document.getElementById('dmail-upload-tool')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 50)
+    setView('uploads')
   }
 
   return (
-    <section className="space-demo">
+    <div className="dmail-spaces-section">
       {onNavigateToSettings && (
         <nav className="dmail-spaces-nav">
           <button
-            onClick={() => {
-              // Already on spaces view
-            }}
-            className="dmail-spaces-nav-button active"
+            onClick={() => setView('spaces')}
+            className={`dmail-spaces-nav-button ${view === 'spaces' ? 'active' : ''}`}
+            type="button"
           >
             <span>📁</span> Spaces
           </button>
           <button
-            onClick={() => {
-              // Scroll to space creator if it exists
-              setTimeout(() => {
-                const creatorCard = document.querySelector('.space-card-3d')
-                if (creatorCard) {
-                  creatorCard.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }
-              }, 100)
-            }}
-            className="dmail-spaces-nav-button"
+            onClick={() => setView('create')}
+            className={`dmail-spaces-nav-button ${view === 'create' ? 'active' : ''}`}
+            type="button"
           >
             <span>➕</span> Create Space
           </button>
           <button
+            onClick={() => setView('uploads')}
+            className={`dmail-spaces-nav-button ${view === 'uploads' ? 'active' : ''}`}
+            type="button"
+          >
+            <span>📤</span> Uploads
+          </button>
+          <button
+            onClick={() => setView('import')}
+            className={`dmail-spaces-nav-button ${view === 'import' ? 'active' : ''}`}
+            type="button"
+          >
+            <span>📥</span> Import
+          </button>
+          <button
             onClick={onNavigateToSettings}
             className="dmail-spaces-nav-button"
+            type="button"
           >
             <span>⚙️</span> Settings
           </button>
         </nav>
       )}
-      <SpaceEnsurer
-        renderNoSpaces={() => <SpaceCreatorCard />}
-        renderCreator={() => <SpaceCreatorCard />}
-      >
-        <SpacePicker>
-          <DmailSpacesInner
-            selectedRoot={selectedRoot}
-            setSelectedRoot={setSelectedRoot}
-            showUploadTool={showUploadTool}
-            setShowUploadTool={setShowUploadTool}
-            openAdvancedUpload={openAdvancedUpload}
-          />
-        </SpacePicker>
-      </SpaceEnsurer>
-    </section>
+      <section className="space-demo">
+        <SpaceEnsurer
+          renderNoSpaces={() => <SpaceCreatorCard />}
+          renderCreator={() => <SpaceCreatorCard />}
+        >
+          <SpacePicker>
+            <DmailSpacesInner
+              view={view}
+              selectedRoot={selectedRoot}
+              setSelectedRoot={setSelectedRoot}
+              showUploadTool={showUploadTool}
+              setShowUploadTool={setShowUploadTool}
+              openAdvancedUpload={openAdvancedUpload}
+            />
+          </SpacePicker>
+        </SpaceEnsurer>
+      </section>
+    </div>
   )
 }
 
 function DmailSpacesInner({
+  view,
   selectedRoot,
   setSelectedRoot,
   showUploadTool,
   setShowUploadTool,
   openAdvancedUpload,
 }: {
+  view: DmailSpacesView
   selectedRoot: UnknownLink | undefined
   setSelectedRoot: (cid?: UnknownLink) => void
   showUploadTool: boolean
   setShowUploadTool: (v: boolean) => void
   openAdvancedUpload: () => void
 }) {
-  const [{ selectedSpace }] = useSpacePickerContext()
+  const [{ selectedSpace }, { setSelectedSpace }] = useSpacePickerContext()
   const activeSpace = selectedSpace as SpaceT | undefined
 
   useEffect(() => {
@@ -730,22 +923,39 @@ function DmailSpacesInner({
     setSelectedRoot(undefined)
   }
 
-  return (
-    <>
-      <div className="space-toolbar space-upload-launch">
-        <div className="space-help">
-          {activeSpace ? `Uploading to: ${activeSpace.name || activeSpace.did()}` : 'Select a space to upload.'}
-        </div>
-        <button className="space-secondary-btn" type="button" onClick={openAdvancedUpload}>
-          Open Advanced Upload
-        </button>
-      </div>
+  if (view === 'spaces') {
+    return (
       <div className="space-grid">
         <SpacePickerPanel />
         <SharingPanel space={activeSpace} />
-        <UploadPanel space={activeSpace} onUploaded={(cid) => setSelectedRoot(cid)} />
-        <UploadsPanel space={activeSpace} onSelectRoot={onSelectRoot} />
-        <FileViewerPanel space={activeSpace} root={selectedRoot} onCleared={clearRoot} />
+      </div>
+    )
+  }
+
+  if (view === 'create') {
+    return (
+      <div className="space-grid space-grid-single">
+        <SpaceCreatorCard />
+      </div>
+    )
+  }
+
+  if (view === 'uploads') {
+    return (
+      <>
+        <div className="space-toolbar space-upload-launch">
+          <div className="space-help">
+            {activeSpace ? `Uploading to: ${activeSpace.name || activeSpace.did()}` : 'Select a space in the Spaces tab to upload.'}
+          </div>
+          <button className="space-secondary-btn" type="button" onClick={openAdvancedUpload}>
+            Open Advanced Upload
+          </button>
+        </div>
+        <div className="space-grid space-grid-uploads">
+          <UploadPanel space={activeSpace} onUploaded={(cid) => setSelectedRoot(cid)} />
+          <UploadsPanel space={activeSpace} onSelectRoot={onSelectRoot} />
+          <FileViewerPanel space={activeSpace} root={selectedRoot} onCleared={clearRoot} />
+        </div>
         {showUploadTool && (
           <DmailUploadTool
             space={activeSpace}
@@ -753,9 +963,23 @@ function DmailSpacesInner({
             onClose={() => setShowUploadTool(false)}
           />
         )}
+      </>
+    )
+  }
+
+  if (view === 'import') {
+    return (
+      <div className="space-grid space-grid-single">
+        <div className="space-grid-cell-full">
+          <ImportSpace onImport={(space) => setSelectedSpace(space)}>
+            <ImportSpacePanel />
+          </ImportSpace>
+        </div>
       </div>
-    </>
-  )
+    )
+  }
+
+  return null
 }
 
 function UploadPanel({

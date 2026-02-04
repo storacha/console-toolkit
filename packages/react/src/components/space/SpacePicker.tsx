@@ -221,7 +221,7 @@ export const SpacePickerList = ({
   onSpaceClick,
   ...divProps 
 }: SpacePickerListProps) => {
-  const [{ selectedSpace, publicSpaces, privateSpaces }] = useSpacePickerContext()
+  const [{ publicSpaces, privateSpaces }] = useSpacePickerContext()
 
   const spacesToShow = type === 'public' 
     ? publicSpaces 

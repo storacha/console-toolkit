@@ -148,6 +148,7 @@ const UploadToolRoot = <T extends As = 'div'>({
   children,
   ...props
 }: UploadToolProps<T>) => {
+  void props
   const [{ client, accounts, spaces }] = useW3()
   const [uploadType, setUploadType] = useState<UploadType>(defaultUploadType)
   const [wrapInDirectory, setWrapInDirectory] = useState(defaultWrapInDirectory)
@@ -643,6 +644,7 @@ export const UploadToolStatus = <T extends As = 'div'>({
   renderFailed,
   ...divProps
 }: UploadToolStatusProps<T>) => {
+  void divProps
   const [{ status, file, files, uploadProgress, storedDAGShards, dataCID, error }] = useUploadToolContext()
 
   switch (status) {

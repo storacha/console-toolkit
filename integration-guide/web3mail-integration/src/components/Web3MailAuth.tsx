@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react'
-import { 
-  useStorachaAuth, 
+import type { SpaceUsage } from '@storacha/console-toolkit-react'
+import {
+  useStorachaAuth,
   StorachaAuth,
   SettingsProvider,
   RewardsSection,
@@ -254,7 +255,7 @@ function SettingsSection({ onNavigateToChangePlan, onNavigateToSpaces }: { onNav
 }
 
 function SettingsSectionContent({ onNavigateToChangePlan }: { onNavigateToChangePlan: () => void }) {
-  const [{ referrals = [], referralLink, refcodeLoading, accountEmail, plan, usage, planLoading, usageLoading }, { copyReferralLink }] = useSettingsContext()
+  const [{ referrals = [], referralLink, refcodeLoading, accountEmail, plan, usage, usageLoading }, { copyReferralLink }] = useSettingsContext()
   const referralsServiceURL = (import.meta as any).env?.VITE_REFERRALS_SERVICE_URL
   
   const formatFileSize = (bytes: number): string => {
@@ -279,15 +280,17 @@ function SettingsSectionContent({ onNavigateToChangePlan }: { onNavigateToChange
 
   const product = plan?.product
   const planName = product && PLANS[product] ? PLANS[product].name : 'Unknown'
-  const allocated = Object.values(usage?.spaces ?? {}).reduce((total, space) => total + space.total, 0)
+  const allocated = Object.values(usage?.spaces ?? {}).reduce(
+    (total: number, space: SpaceUsage) => total + space.total,
+    0
+  )
   const limit = plan?.product ? PLANS[plan.product]?.limit ?? 0 : 0
 
-  const spaces = usage ? Object.entries(usage.spaces)
-    .sort((a, b) => b[1].total - a[1].total)
-    .map(([spaceDID, data]) => ({
-      space: spaceDID,
-      total: data.total,
-    })) : []
+  const spaces = usage
+    ? (Object.entries(usage.spaces) as [string, SpaceUsage][])
+        .sort((a, b) => b[1].total - a[1].total)
+        .map(([spaceDID, data]) => ({ space: spaceDID, total: data.total }))
+    : []
 
   return (
     <div className="web3mail-settings-section">
@@ -632,28 +635,8 @@ export function Web3MailAuthForm() {
   const auth = useStorachaAuth()
   const [error, setError] = useState<string | null>(null)
 
-  const isWeb3MailEmail = (email: string) => {
-    return email.endsWith('@ethmail.cc') || email.endsWith('@ethermail.io')
-  }
-
-  useEffect(() => {
-    if (auth.email && isWeb3MailEmail(auth.email)) {
-      setError(null)
-    }
-  }, [auth.email])
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    if (!auth.email) {
-      setError('Please enter your Ether Mail address')
-      return
-    }
-
-    if (!isWeb3MailEmail(auth.email)) {
-      setError('Please use an Ether Mail address (e.g. 0x..@ethmail.cc or 0x..@ethermail.io)')
-      return
-    }
 
     setError(null)
 
@@ -700,16 +683,10 @@ export function Web3MailAuthForm() {
                 className="web3mail-email-input"
                 required
               />
-              {auth.email && !isWeb3MailEmail(auth.email) && (
-                <p className="email-error" style={{ color: '#ff6b6b', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                  Please use an Ether Mail address (e.g. 0x..@ethmail.cc or 0x..@ethermail.io)
-                </p>
-              )}
             </div>
 
             <button
               type="submit"
-              disabled={auth.isSubmitting || (auth.email ? !isWeb3MailEmail(auth.email) : false)}
               className="web3mail-auth-button"
             >
               {auth.isSubmitting ? 'Authenticating...' : 'Authenticate with Web3Mail'}

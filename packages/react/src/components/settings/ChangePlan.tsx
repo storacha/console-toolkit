@@ -1,5 +1,4 @@
 import type { As, Props, Options } from 'ariakit-react-utils'
-import type { ReactNode } from 'react'
 import React, { useState, useCallback } from 'react'
 import { createElement } from 'ariakit-react-utils'
 import { useW3 } from '../../providers/Provider.js'
@@ -65,7 +64,7 @@ export const ChangePlanPlanSection = React.forwardRef<
   { planID, planName, planLabel, flatFee, flatFeeAllotment, perGbFee, ...props },
   ref
 ) {
-  const [{ client, accounts }] = useW3()
+  const [{ accounts }] = useW3()
   const [{ plan, planLoading }, { refreshPlan }] = useSettingsContext()
   const account = accounts[0]
   const currentPlanID = plan?.product
