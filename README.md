@@ -1,10 +1,10 @@
 # Storacha Console Toolkit
 
-The Storacha Console Toolkit is a plug-and-play UI library that allows Web3 applications to embed Storacha console features directly inside their own interface—eliminating “double navigation” and redirect-based UX.
+A plug-and-play UI library that enables Web3 applications to embed Storacha console features directly into their interface, eliminating redirect-based UX and double navigation.
 
 ## Overview
 
-The toolkit provides both headless components (logic only, bring your own styling) and styled components (console-exact UI) for seamless integration. Partner applications can quickly add Storacha features such as authentication, space management, file uploads, content viewing, and sharing—by importing only the components they need.
+The toolkit provides headless React components with complete logic and no styling dependencies, giving you full control over appearance. Applications can quickly integrate Storacha features such as authentication, space management, file operations, and account settings.
 
 ## Features
 
@@ -18,13 +18,14 @@ The toolkit provides both headless components (logic only, bring your own stylin
 - **SpaceCreator** - Create public or private spaces
 - **SpaceList** - List content within a space with pagination
 - **SpaceEnsurer** - Ensure a space is selected before rendering
+- **ImportSpace** - Import existing spaces
+- **PlanGate** - Plan selection and validation
 
 ### File Operations
 - **UploadTool** - Upload files, directories, or CAR files
   - Drag & drop support
   - Real-time progress tracking
   - Support for public and private spaces
-  - Wrap in directory option
 - **FileViewer** - View file details (Root CID, Gateway URL, Shards)
 - File removal with shard management
 
@@ -33,22 +34,19 @@ The toolkit provides both headless components (logic only, bring your own stylin
 - Delegation management
 - Revocation support
 
-## Packages
-
-### `@storacha/console-toolkit-react`
-Headless React components with no styling dependencies. Provides complete logic with full control over appearance.
-
-### `@storacha/console-toolkit-react-styled`
-Pre-styled components matching the Storacha console design. Includes CSS and assets for immediate use.
+### Settings & Account Management
+- **SettingsProvider** - Account settings context
+- **RewardsSection** - Display referral counts, credits, and points
+- **AccountOverview** - Show account email and current plan
+- **UsageSection** - Display storage usage and per-space breakdown
+- **AccountManagement** - Account deletion and management
+- **ChangePlan** - Plan selection and billing administration
 
 ## Installation
 
 ```bash
-# For headless components
+# Install headless components
 npm install @storacha/console-toolkit-react @storacha/ui-core
-
-# For styled components
-npm install @storacha/console-toolkit-react-styled @storacha/console-toolkit-react @storacha/ui-core
 ```
 
 ## Examples
@@ -58,8 +56,16 @@ Complete working examples are available in the `examples/` directory:
 - **[headless-auth](./examples/headless-auth/)** - Custom styling with headless components
 - **[styled-auth](./examples/styled-auth/)** - Pre-styled components with console-exact UI
 - **[iframe-auth](./examples/iframe-auth/)** - Embedded authentication in iframe context
-- **[space-management](./examples/space-management/)** - Complete space management with upload, file viewing, and sharing
+- **[space-management](./examples/space-management/)** - Complete space management with upload, file viewing, sharing, and settings
 
+## Integration Guides
+
+Integration examples:
+
+- **[dmail-integration](./integration-guide/dmail-integration/)** - Dmail email authentication integration
+- **[web3mail-integration](./integration-guide/web3mail-integration/)** - Web3Mail (EtherMail) authentication integration
+
+See the [Integration Guide](./integration-guide/README.md) for detailed documentation.
 
 ## Development
 
@@ -70,12 +76,10 @@ pnpm install
 # Build packages
 pnpm build
 
-
 # Run examples
-cd examples/headless-auth && pnpm dev
-cd examples/styled-auth && pnpm dev
-cd examples/iframe-auth && pnpm dev
 cd examples/space-management && pnpm dev
+cd integration-guide/dmail-integration && pnpm dev
+cd integration-guide/web3mail-integration && pnpm dev
 ```
 
 ## License
