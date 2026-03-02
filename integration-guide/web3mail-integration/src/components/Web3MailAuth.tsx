@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from 'react'
+import { useState, FormEvent } from 'react'
 import type { SpaceUsage } from '@storacha/console-toolkit-react'
 import {
   useStorachaAuth,
