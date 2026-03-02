@@ -21,7 +21,8 @@
     "typecheck": "tsc --build --emitDeclarationOnly --pretty --verbose",
     "dev": "npm run copy-assets && tsc --build --watch --preserveWatchOutput",
     "predev": "npm run copy-assets",
-    "clean": "rm -rf dist *.tsbuildinfo"
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "lint": "eslint \"src/**/*.{ts,tsx}\""
   },
   "files": [
     "dist",

@@ -19,6 +19,7 @@
     "typecheck": "tsc --build --emitDeclarationOnly --pretty --verbose",
     "dev": "tsc --build --watch --preserveWatchOutput",
     "clean": "rm -rf dist *.tsbuildinfo",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "test": "vitest run",
     "test:watch": "vitest watch"
   },

@@ -513,17 +513,17 @@ export const UploadToolWrapCheckbox = <T extends As = 'input'>({
 }: UploadToolWrapCheckboxProps<T>) => {
   const [{ wrapInDirectory, uploadType, isPrivateSpace }, { setWrapInDirectory }] = useUploadToolContext()
 
-  // Only show for file type in public spaces
-  if (uploadType !== 'file' || isPrivateSpace) {
-    return null
-  }
-
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setWrapInDirectory(e.target.checked)
     },
     [setWrapInDirectory]
   )
+
+  // Only show for file type in public spaces
+  if (uploadType !== 'file' || isPrivateSpace) {
+    return null
+  }
 
   if (renderCheckbox) {
     return <>{renderCheckbox(wrapInDirectory, () => setWrapInDirectory(!wrapInDirectory))}</>
