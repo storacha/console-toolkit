@@ -5,11 +5,13 @@
   "description": "Storacha Console Integration Toolkit - Plug-and-play UI components for seamless integration",
   "packageManager": "pnpm@10.1.0",
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm --filter \"./packages/*\" run build && pnpm --filter \"./examples/*\" --filter \"./integration-guide/*\" run build",
+    "ci": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test",
     "clean": "pnpm -r clean",
-    "lint": "pnpm -r lint"
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm --filter \"./packages/*\" --filter \"./integration-guide/*\" run typecheck"
   },
   "pnpm": {
     "overrides": {

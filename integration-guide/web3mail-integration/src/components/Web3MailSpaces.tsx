@@ -149,7 +149,7 @@ export function Web3MailSpaces({ onNavigateToSettings }: { onNavigateToSettings?
 }
 
 function Web3MailImportView() {
-  const [{ userDID, isImporting, error, success }, { copyDID, emailDID, importUCAN, setUcanValue }] = useImportSpaceContext()
+  const [{ userDID, error, success }, { copyDID, emailDID, importUCAN, setUcanValue }] = useImportSpaceContext()
   const [copied, setCopied] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)

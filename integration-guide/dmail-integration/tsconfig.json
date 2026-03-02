@@ -23,5 +23,5 @@
       "@storacha/console-toolkit-react-styled/*": ["../../packages/react-styled/src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "../../packages/react-styled/src/vite-env.d.ts"]
 }
