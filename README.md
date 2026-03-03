@@ -73,8 +73,8 @@ See the [Integration Guide](./integration-guide/README.md) for detailed document
 # Install dependencies
 pnpm install
 
-# Build packages
-pnpm build
+# Run the full pipeline
+pnpm run ci
 
 # Run examples
 cd examples/space-management && pnpm dev
