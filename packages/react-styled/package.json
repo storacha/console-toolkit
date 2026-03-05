@@ -22,7 +22,8 @@
     "dev": "npm run copy-assets && tsc --build --watch --preserveWatchOutput",
     "predev": "npm run copy-assets",
     "clean": "rm -rf dist *.tsbuildinfo",
-    "lint": "eslint \"src/**/*.{ts,tsx}\""
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
+    "test": "vitest run"
   },
   "files": [
     "dist",
@@ -41,9 +42,14 @@
     "@storacha/ui-core": "^2.4.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.0.0",
     "@types/react": "^18.0.0",
+    "fake-indexeddb": "^5.0.0",
+    "happy-dom": "^12.0.0",
     "react": "^18.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
