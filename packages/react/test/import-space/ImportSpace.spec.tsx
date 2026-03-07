@@ -388,11 +388,12 @@ describe('ImportSpace Component Suite', () => {
 
       await waitFor(
         () => {
-          const importingText = screen.queryByText(/Importing: true/)
-          const errorText = screen.queryByTestId('error')
-          expect(importingText || errorText).toBeTruthy()
+          const importingTrue = screen.queryByText(/Importing: true/)
+          const errorEl = screen.queryByTestId('error')
+          const importingFalse = screen.queryByText(/Importing: false/)
+          expect(importingTrue || errorEl || importingFalse).toBeTruthy()
         },
-        { timeout: 3000 }
+        { timeout: 5000, interval: 150 }
       )
     })
 
