@@ -11,7 +11,7 @@
     "test": "pnpm -r test",
     "clean": "pnpm -r clean",
     "lint": "pnpm -r lint",
-    "typecheck": "pnpm --filter \"./packages/*\" --filter \"./integration-guide/*\" run typecheck"
+    "typecheck": "pnpm --filter \"./packages/*\" --filter \"./integration-guide/*\" --filter \"./examples/*\" run typecheck"
   },
   "pnpm": {
     "overrides": {
