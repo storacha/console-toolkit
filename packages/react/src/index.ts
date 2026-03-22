@@ -9,6 +9,8 @@
 export * from './components/StorachaAuth.js'
 export * from './hooks/useStorachaAuth.js'
 export * from './providers/Provider.js'
+export { StorachaErrorBoundary } from './components/ErrorBoundary.js'
+export type { ErrorBoundaryProps, ErrorBoundaryState } from './components/ErrorBoundary.js'
 export * from './components/space/index.js'
 export * from './components/upload/index.js'
 export {
