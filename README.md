@@ -56,7 +56,7 @@ Complete working examples are available in the `examples/` directory:
 - **[headless-auth](./examples/headless-auth/)** - Custom styling with headless components
 - **[styled-auth](./examples/styled-auth/)** - Pre-styled components with console-exact UI
 - **[iframe-auth](./examples/iframe-auth/)** - Embedded authentication in iframe context
-- **[space-management](./examples/space-management/)** - Complete space management with upload, file viewing, sharing, and settings
+- **[full-app-headless](./examples/full-app-headless/)** - Full headless integration: spaces, upload, files, sharing, and settings (custom UI)
 
 ## Integration Guides
 
@@ -77,7 +77,7 @@ pnpm install
 pnpm build
 
 # Run examples
-cd examples/space-management && pnpm dev
+cd examples/full-app-headless && pnpm dev
 cd integration-guide/dmail-integration && pnpm dev
 cd integration-guide/web3mail-integration && pnpm dev
 ```
