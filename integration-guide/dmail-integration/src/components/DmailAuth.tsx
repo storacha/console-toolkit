@@ -1,9 +1,8 @@
 import { useState, useEffect, FormEvent } from 'react'
-import { 
-  useStorachaAuth, 
+import {
+  useStorachaAuth,
   StorachaAuth,
   SettingsProvider,
-  RewardsSection,
   AccountOverview,
   UsageSection,
   AccountManagement,
@@ -16,14 +15,6 @@ import { Header } from './Header'
 import { DmailSpaces } from './DmailSpaces'
 
 // Type assertions for sub-components
-const RewardsSectionTyped = RewardsSection as typeof RewardsSection & {
-  Referred: any
-  USDCredits: any
-  RachaPoints: any
-  Info: any
-  ReferralLink: any
-  ReferralsList: any
-}
 const AccountOverviewTyped = AccountOverview as typeof AccountOverview & {
   Email: any
   Plan: any
@@ -210,15 +201,8 @@ export function AuthenticatedContent() {
 }
 
 function SettingsSection({ onNavigateToChangePlan, onNavigateToSpaces }: { onNavigateToChangePlan: () => void; onNavigateToSpaces: () => void }) {
-  const referralsServiceURL = typeof import.meta !== 'undefined' && (import.meta as any).env 
-    ? (import.meta as any).env.VITE_REFERRALS_SERVICE_URL 
-    : undefined
-
   return (
-    <SettingsProvider
-      referralsServiceURL={referralsServiceURL}
-      referralURL="http://storacha.network/referred"
-    >
+    <SettingsProvider>
       <nav className="dmail-spaces-nav">
         <button
           onClick={onNavigateToSpaces}
@@ -252,9 +236,8 @@ function SettingsSection({ onNavigateToChangePlan, onNavigateToSpaces }: { onNav
 }
 
 function SettingsSectionContent({ onNavigateToChangePlan }: { onNavigateToChangePlan: () => void }) {
-  const [{ referrals = [], referralLink, refcodeLoading, accountEmail, plan, usage, usageLoading }, { copyReferralLink }] = useSettingsContext()
-  const referralsServiceURL = (import.meta as any).env?.VITE_REFERRALS_SERVICE_URL
-  
+  const [{ accountEmail, plan, usage, usageLoading }] = useSettingsContext()
+
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes'
     const k = 1024
@@ -262,12 +245,6 @@ function SettingsSectionContent({ onNavigateToChangePlan }: { onNavigateToChange
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
   }
-
-  const MAX_REFERRALS = 11
-  const MAX_CREDITS = 460
-  const referred = referrals.length
-  const credits = 0
-  const points = 0
 
   const PLANS: Record<string, { name: string; limit: number }> = {
     'did:web:starter.storacha.network': { name: 'Starter', limit: 5 * 1024 * 1024 * 1024 },
@@ -292,52 +269,6 @@ function SettingsSectionContent({ onNavigateToChangePlan }: { onNavigateToChange
       <div className="dmail-settings-header">
         <h2>Settings</h2>
       </div>
-
-      <RewardsSectionTyped>
-        <div className="dmail-settings-subsection">
-          <h3>Rewards</h3>
-          <div className="dmail-rewards-grid">
-            <RewardsSectionTyped.Referred>
-              <div className="dmail-reward-card">
-                <h4>Referred</h4>
-                <div className="dmail-reward-value">{referred} / {MAX_REFERRALS}</div>
-              </div>
-            </RewardsSectionTyped.Referred>
-            <RewardsSectionTyped.USDCredits>
-              <div className="dmail-reward-card">
-                <h4>USD Credits</h4>
-                <div className="dmail-reward-value">{credits} / {MAX_CREDITS}</div>
-              </div>
-            </RewardsSectionTyped.USDCredits>
-            <RewardsSectionTyped.RachaPoints>
-              <div className="dmail-reward-card">
-                <h4>Racha Points</h4>
-                <div className="dmail-reward-value">{points}</div>
-              </div>
-            </RewardsSectionTyped.RachaPoints>
-          </div>
-          <RewardsSectionTyped.Info>
-            <div className="dmail-rewards-info">
-              <h4>Earn Free Storage and Racha Points!</h4>
-              <p>Turn your friends into Lite or Business Rachas and receive up to 16 months of Lite and 3 months of Business for free! You can also earn Racha Points.</p>
-            </div>
-          </RewardsSectionTyped.Info>
-          <RewardsSectionTyped.ReferralLink onClick={copyReferralLink}>
-            {refcodeLoading ? (
-              <div className="dmail-loading-state">Loading...</div>
-            ) : referralLink ? (
-              <div className="dmail-referral-link">
-                <input type="text" readOnly value={referralLink} className="dmail-referral-link-input" />
-                <button onClick={copyReferralLink} className="dmail-copy-button">📋 Copy</button>
-              </div>
-            ) : (
-              <div className="dmail-referral-link-placeholder">
-                {referralsServiceURL ? 'No referral link available. Click to create one.' : 'Referrals service not configured. Set VITE_REFERRALS_SERVICE_URL to enable referral links.'}
-              </div>
-            )}
-          </RewardsSectionTyped.ReferralLink>
-        </div>
-      </RewardsSectionTyped>
 
       <AccountOverviewTyped>
         <div className="dmail-settings-subsection">
