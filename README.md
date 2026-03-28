@@ -1,86 +1,188 @@
 # Storacha Console Toolkit
 
-A plug-and-play UI library that enables Web3 applications to embed Storacha console features directly into their interface, eliminating redirect-based UX and double navigation.
+A React component library for embedding Storacha console features into any web application. It provides two packages: a headless package with all the logic and no styling, and a styled package with Storacha-branded UI ready to drop in.
 
-## Overview
+## Packages
 
-The toolkit provides headless React components with complete logic and no styling dependencies, giving you full control over appearance. Applications can quickly integrate Storacha features such as authentication, space management, file operations, and account settings.
+### `@storacha/console-toolkit-react`
 
-## Features
-
-### Authentication
-- Email-based authentication flow
-- Session management
-- Iframe support for embedded contexts
-
-### Space Management
-- **SpacePicker** - List and select spaces
-- **SpaceCreator** - Create public or private spaces
-- **SpaceList** - List content within a space with pagination
-- **SpaceEnsurer** - Ensure a space is selected before rendering
-- **ImportSpace** - Import existing spaces
-- **PlanGate** - Plan selection and validation
-
-### File Operations
-- **UploadTool** - Upload files, directories, or CAR files
-  - Drag & drop support
-  - Real-time progress tracking
-  - Support for public and private spaces
-- **FileViewer** - View file details (Root CID, Gateway URL, Shards)
-- File removal with shard management
-
-### Sharing
-- **SharingTool** - Share spaces via email or DID
-- Delegation management
-- Revocation support
-
-### Settings & Account Management
-- **SettingsProvider** - Account settings context
-- **RewardsSection** - Display referral counts, credits, and points
-- **AccountOverview** - Show account email and current plan
-- **UsageSection** - Display storage usage and per-space breakdown
-- **AccountManagement** - Account deletion and management
-- **ChangePlan** - Plan selection and billing administration
-
-## Installation
+Headless components — all authentication, space management, upload, and settings logic with zero built-in styling. You control every pixel.
 
 ```bash
-# Install headless components
 npm install @storacha/console-toolkit-react @storacha/ui-core
 ```
 
+### `@storacha/console-toolkit-react-styled`
+
+Pre-styled components that match the Storacha console UI exactly. Good for quick integrations where custom branding is not a requirement.
+
+```bash
+npm install @storacha/console-toolkit-react-styled @storacha/ui-core
+```
+
+---
+
+## What's included
+
+### Authentication
+
+`StorachaAuth` handles the complete email-based auth flow. It uses a compound component pattern so you can compose just the pieces you need.
+
+```tsx
+import { Provider, StorachaAuth } from '@storacha/console-toolkit-react'
+
+function App() {
+  return (
+    <Provider>
+      <StorachaAuth onAuthEvent={(event) => console.log(event)}>
+        <StorachaAuth.Ensurer>
+          <MyApp />
+        </StorachaAuth.Ensurer>
+      </StorachaAuth>
+    </Provider>
+  )
+}
+```
+
+Sub-components: `StorachaAuth.Form`, `StorachaAuth.Submitted`, `StorachaAuth.Ensurer`, `StorachaAuth.EmailInput`, `StorachaAuth.CancelButton`
+
+`StorachaAuth.Ensurer` handles the loading → form → submitted → authenticated state machine. Once the user is authenticated it renders `children`. Until then it renders the appropriate UI state.
+
+For iframe contexts, pass `enableIframeSupport={true}` to `StorachaAuth` and it will wait for authentication signals from the parent window rather than showing the form.
+
+### Space management
+
+Components for listing, creating, and selecting spaces:
+
+- **`SpacePicker`** — list spaces and let the user select one
+- **`SpaceCreator`** — create a new public or private space
+- **`SpaceEnsurer`** — ensure a space is selected before rendering children
+- **`SpaceList`** — paginated list of uploads within the current space
+- **`ImportSpace`** — import an existing space by DID
+- **`PlanGate`** — block access until the user has a valid plan
+
+### Uploads
+
+- **`UploadTool`** — upload files, directories, or CAR archives with drag-and-drop and real-time progress
+- **`FileViewer`** — inspect an upload: root CID, gateway URL, shards
+
+### Settings
+
+Wrap your settings UI in `SettingsProvider` to get access to plan info, usage stats, and account management actions.
+
+```tsx
+import { SettingsProvider, AccountOverview, UsageSection, AccountManagement, ChangePlan } from '@storacha/console-toolkit-react'
+
+function SettingsPage() {
+  return (
+    <SettingsProvider accountDeletionURL="https://your-deletion-form.example.com">
+      <AccountOverview />
+      <UsageSection />
+      <ChangePlan />
+      <AccountManagement />
+    </SettingsProvider>
+  )
+}
+```
+
+`SettingsProvider` accepts optional `referralsServiceURL` and `referralURL` props if you run a referral service.
+
+---
+
+## Provider setup
+
+`Provider` is the root context. It initializes the Storacha client and exposes accounts, spaces, and the client instance to all child components. Wrap your entire app (or the portion using toolkit components) in it.
+
+```tsx
+import { Provider } from '@storacha/console-toolkit-react'
+
+// Basic — connects to the default Storacha service
+<Provider>
+  <App />
+</Provider>
+
+// Custom service endpoint
+<Provider servicePrincipal={principal} connection={connection}>
+  <App />
+</Provider>
+```
+
+---
+
+## Hooks
+
+- **`useStorachaAuth()`** — access auth state and actions: `isAuthenticated`, `isLoading`, `email`, `submitted`, `setEmail`, `cancelLogin`, `logoutWithTracking`, `currentUser`
+- **`useSettingsContext()`** — access settings state: `plan`, `usage`, `accountEmail`, `planLoading`, `usageLoading`, and actions to refresh or manage the account
+- **`useW3()`** — low-level access to the raw context state from `Provider`
+
+---
+
+## Using the styled package
+
+```tsx
+import { StorachaAuth } from '@storacha/console-toolkit-react-styled'
+import '@storacha/console-toolkit-react-styled/styles.css'
+
+function App() {
+  return (
+    <StorachaAuth>
+      <StorachaAuth.Form />
+    </StorachaAuth>
+  )
+}
+```
+
+The styled package re-exports all headless components and adds Storacha-branded CSS on top. You still need `Provider` from the headless package.
+
+---
+
 ## Examples
 
-Complete working examples are available in the `examples/` directory:
+Working examples are in the `examples/` directory. Run any of them with `pnpm dev` from their directory.
 
-- **[headless-auth](./examples/headless-auth/)** - Custom styling with headless components
-- **[styled-auth](./examples/styled-auth/)** - Pre-styled components with console-exact UI
-- **[iframe-auth](./examples/iframe-auth/)** - Embedded authentication in iframe context
-- **[full-app-headless](./examples/full-app-headless/)** - Full headless integration: spaces, upload, files, sharing, and settings (custom UI)
+| Example | Description |
+|---------|-------------|
+| [`full-app-headless`](./examples/full-app-headless/) | Complete integration: auth, spaces, uploads, settings — fully custom UI |
+| [`headless-auth`](./examples/headless-auth/) | Auth-only example with custom styling |
+| [`styled-auth`](./examples/styled-auth/) | Drop-in auth using the styled package |
+| [`iframe-auth`](./examples/iframe-auth/) | Authentication inside an iframe |
 
-## Integration Guides
+Integration guide examples (more complex real-world integrations) are in [`integration-guide/`](./integration-guide/).
 
-Integration examples:
-
-- **[dmail-integration](./integration-guide/dmail-integration/)** - Dmail email authentication integration
-- **[web3mail-integration](./integration-guide/web3mail-integration/)** - Web3Mail (EtherMail) authentication integration
-
-See the [Integration Guide](./integration-guide/README.md) for detailed documentation.
+---
 
 ## Development
 
+This is a pnpm monorepo.
+
 ```bash
-# Install dependencies
+# Install all dependencies
 pnpm install
 
-# Build packages
+# Build all packages
 pnpm build
 
-# Run examples
-cd examples/full-app-headless && pnpm dev
-cd integration-guide/dmail-integration && pnpm dev
-cd integration-guide/web3mail-integration && pnpm dev
+# Run tests across all packages
+pnpm test
+
+# Run the full CI check (lint + typecheck + test + build)
+pnpm run ci
 ```
+
+To develop a specific example:
+
+```bash
+cd examples/full-app-headless
+pnpm dev
+```
+
+---
+
+## Contributing
+
+Contributions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to get set up, make changes, run the CI checks, and submit a pull request.
+
+---
 
 ## License
 

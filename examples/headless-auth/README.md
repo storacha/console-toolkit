@@ -17,17 +17,16 @@ pnpm dev
 ### Component Usage
 
 ```tsx
-import { Provider } from '@storacha/console-toolkit-react'
-import { StorachaAuth, useStorachaAuth } from '@storacha/console-toolkit-react'
+import { Provider, StorachaAuth, useStorachaAuth } from '@storacha/console-toolkit-react'
 
 function CustomForm() {
-  const [{ handleRegisterSubmit, submitted }] = useStorachaAuth()
-  
+  const { handleRegisterSubmit, isSubmitting } = useStorachaAuth()
+
   return (
     <form onSubmit={handleRegisterSubmit}>
       <label htmlFor="email">Email Address</label>
       <StorachaAuth.EmailInput id="email" />
-      <button type="submit" disabled={submitted}>
+      <button type="submit" disabled={isSubmitting}>
         Sign In
       </button>
     </form>
