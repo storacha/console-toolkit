@@ -70,7 +70,7 @@ Feature UI is split under `src/components/` (e.g. `SharingView`, `UploadViews`, 
 | Spaces | `SpacePicker`, `SpaceCreator`, `SpaceList`, `ImportSpace`, `PlanGate` |
 | Files & uploads | `FileViewer`, `UploadTool`, remove/upload helpers |
 | Sharing | `SharingTool` |
-| Account & billing | `AccountOverview`, `UsageSection`, `AccountManagement`, `RewardsSection`, `ChangePlan` (used from Settings / change-plan views) |
+| Account & billing | `AccountOverview`, `UsageSection`, `AccountManagement`, `ChangePlan` (used from Settings / change-plan views) |
 
 See package docs and source under `packages/react` for the full API.
 
