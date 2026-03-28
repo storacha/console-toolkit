@@ -1,5 +1,4 @@
 import {
-  RewardsSection,
   AccountOverview,
   UsageSection,
   AccountManagement,
@@ -11,14 +10,6 @@ import {
  * at runtime, but TypeScript does not list sub-components (e.g. UsageSection.SpacesList)
  * on the exported type. These aliases keep JSX usage type-checking without changing runtime.
  */
-export const RewardsSectionTyped = RewardsSection as typeof RewardsSection & {
-  Referred: any
-  USDCredits: any
-  RachaPoints: any
-  Info: any
-  ReferralLink: any
-  ReferralsList: any
-}
 export const AccountOverviewTyped = AccountOverview as typeof AccountOverview & {
   Email: any
   Plan: any
