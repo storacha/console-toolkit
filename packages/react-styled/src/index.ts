@@ -9,7 +9,10 @@
  */
 
 export * from './components/StorachaAuth.js'
+export * from './components/ConsoleLayout.js'
+export * from './components/SpaceList.js'
 export { Provider, useW3, useStorachaAuth } from '@storacha/console-toolkit-react'
+export type { Space } from '@storacha/ui-core'
 export * from './assets/index.js'
 
 
