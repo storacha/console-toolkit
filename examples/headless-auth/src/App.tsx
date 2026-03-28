@@ -2,80 +2,32 @@ import React from 'react'
 import { Provider, useW3 } from '@storacha/console-toolkit-react'
 import { StorachaAuth, useStorachaAuth } from '@storacha/console-toolkit-react'
 
-function CustomAuthForm() {
-  const auth = useStorachaAuth()
-
-  return (
-    <div className="auth-container">
-      <form 
-        className="auth-card"
-        onSubmit={auth.handleRegisterSubmit}
-      >
-        <div className="auth-form-group">
-          <label className="auth-label" htmlFor="email">
-            Email Address
-          </label>
-          <StorachaAuth.EmailInput
-            className="auth-input"
-            id="email"
-            placeholder="Enter your email"
-            required
-          />
-        </div>
-        <button
-          className="auth-button"
-          type="submit"
-          disabled={auth.submitted}
-        >
-          {auth.submitted ? 'Sending...' : 'Sign In'}
-        </button>
-      </form>
-    </div>
-  )
-}
-
-function CustomSubmitted() {
-  const auth = useStorachaAuth()
-
-  return (
-    <div className="auth-container">
-      <div className="auth-card auth-submitted">
-        <h2>Check your email!</h2>
-        <p>
-          We sent a verification link to{' '}
-          <span className="email-highlight">{auth.email}</span>
-          <br />
-          Click the link to complete authentication.
-        </p>
-        <StorachaAuth.CancelButton className="auth-button">
-          Cancel
-        </StorachaAuth.CancelButton>
-      </div>
-    </div>
-  )
-}
-
 function AuthenticatedApp() {
   const [{ accounts }] = useW3()
   const auth = useStorachaAuth()
 
+  const handleLogout = async () => {
+    try {
+      if (auth.logout) {
+        await auth.logout()
+        window.location.reload()
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+  }
+
   return (
-    <div className="authenticated-container">
-      <div className="authenticated-card">
-        <div className="authenticated-header">
-          <h1>Welcome!</h1>
-          <p>You're successfully authenticated</p>
+    <div className="app-auth-container">
+      <div className="app-auth-form-wrapper">
+        <div className="app-auth-logo-container">
+          <div className="app-auth-logo-placeholder">S</div>
+          <h1 className="app-auth-title">Welcome to Your Storage</h1>
         </div>
-
-        <div className="auth-info">
-          <p>
-            <strong>Signed in as:</strong>
-            <br />
-            {accounts[0]?.toEmail()}
-          </p>
-        </div>
-
-        <button onClick={auth.logout} className="logout-button">
+        <p style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '0.875rem' }}>
+          Signed in as <strong>{accounts[0]?.toEmail()}</strong>
+        </p>
+        <button className="app-auth-submit-button" onClick={handleLogout}>
           Sign Out
         </button>
       </div>
@@ -84,27 +36,95 @@ function AuthenticatedApp() {
 }
 
 function App() {
-  const handleAuthEvent = (event: string, properties?: Record<string, any>) => {
-    console.log('🔐 Auth Event:', event, properties)
-  }
-
   return (
     <Provider>
-      <StorachaAuth
-        onAuthEvent={handleAuthEvent}
-        enableIframeSupport={false}
-      >
+      <StorachaAuth>
         <StorachaAuth.Ensurer
           renderLoader={(type) => (
-            <div className="auth-loader">
-              <div className="spinner" />
-              <p className="loader-text">
-                {type === 'initializing' ? 'Initializing...' : 'Loading...'}
-              </p>
+            <div className="app-auth-loader">
+              <div className="app-spinner"></div>
+              <h3>{type === 'initializing' ? 'Initializing...' : 'Authenticating...'}</h3>
             </div>
           )}
-          renderForm={() => <CustomAuthForm />}
-          renderSubmitted={() => <CustomSubmitted />}
+          renderForm={() => (
+            <div className="app-auth-container">
+              <StorachaAuth.Form
+                renderContainer={(children) => (
+                  <div className="app-auth-form-wrapper">
+                    {children}
+                  </div>
+                )}
+                renderLogo={() => (
+                  <div className="app-auth-logo-container">
+                    <div className="app-auth-logo-placeholder">S</div>
+                    <h1 className="app-auth-title">Welcome to Your Storage</h1>
+                    <p className="app-auth-subtitle">Sign in to manage your decentralized spaces and files</p>
+                  </div>
+                )}
+                renderEmailLabel={() => (
+                  <label className="app-auth-label" htmlFor="storacha-auth-email">
+                    Email
+                  </label>
+                )}
+                renderEmailInput={() => (
+                  <StorachaAuth.EmailInput
+                    id="storacha-auth-email"
+                    className="app-auth-email-input"
+                    required
+                  />
+                )}
+                renderSubmitButton={(disabled) => (
+                  <button
+                    type="submit"
+                    className={`app-auth-submit-button ${disabled ? 'loading' : ''}`}
+                    disabled={disabled}
+                  >
+                    {disabled ? (
+                      <>
+                        <span className="app-spinner"></span>
+                        Authorizing...
+                      </>
+                    ) : (
+                      'Authorize'
+                    )}
+                  </button>
+                )}
+              />
+            </div>
+          )}
+          renderSubmitted={() => (
+            <div className="app-auth-container">
+              <StorachaAuth.Submitted
+                renderContainer={(children) => (
+                  <div className="app-auth-form-wrapper">
+                    {children}
+                  </div>
+                )}
+                renderLogo={() => (
+                  <div className="app-auth-logo-container">
+                    <div className="app-auth-logo-placeholder">S</div>
+                    <h1 className="app-auth-title">Welcome to Your Storage</h1>
+                  </div>
+                )}
+                renderTitle={() => (
+                  <h2 className="app-auth-submitted-title">Verify your email address!</h2>
+                )}
+                renderMessage={(email) => (
+                  <p className="app-auth-submitted-message">
+                    Click the link in the email we sent to{' '}
+                    <span className="app-auth-submitted-email">{email}</span> to authorize this agent.
+                    <br />
+                    Don&apos;t forget to check your spam folder!
+                  </p>
+                )}
+                renderCancelButton={() => (
+                  <StorachaAuth.CancelButton className="app-auth-cancel-button">
+                    Cancel
+                  </StorachaAuth.CancelButton>
+                )}
+              />
+            </div>
+          )}
         >
           <AuthenticatedApp />
         </StorachaAuth.Ensurer>
