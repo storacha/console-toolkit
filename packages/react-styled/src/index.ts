@@ -9,7 +9,7 @@
  */
 
 export * from './components/StorachaAuth.js'
-export { useStorachaAuth } from '@storacha/console-toolkit-react'
+export { Provider, useW3, useStorachaAuth } from '@storacha/console-toolkit-react'
 export * from './assets/index.js'
 
 

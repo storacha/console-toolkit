@@ -1,6 +1,5 @@
 import React from 'react'
-import { Provider, useW3, useStorachaAuth } from '@storacha/console-toolkit-react'
-import { StorachaAuth } from '@storacha/console-toolkit-react-styled'
+import { Provider, useW3, useStorachaAuth, StorachaAuth } from '@storacha/console-toolkit-react-styled'
 
 function AuthenticatedApp() {
   const [{ accounts }] = useW3()
