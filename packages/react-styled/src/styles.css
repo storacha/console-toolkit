@@ -22,15 +22,17 @@ body,
 }
 
 /* Background with fire pattern */
+/* Use --racha-fire-bg CSS variable to provide the image URL.
+   The StorachaAuth component sets this via inline style using the bundled asset. */
 .bg-racha-fire {
-  background: #EFE3F3 url("/racha-fire.jpg") bottom left;
+  background: #EFE3F3 var(--racha-fire-bg, none) bottom left;
   background-size: 100% auto;
   background-position: bottom;
   background-repeat: no-repeat;
 }
 
 .bg-racha-fire\/50 {
-  background: transparent url("/racha-fire.jpg") bottom left;
+  background: transparent var(--racha-fire-bg, none) bottom left;
   background-size: 100% auto;
   background-position: bottom;
   background-repeat: no-repeat;
@@ -38,11 +40,9 @@ body,
 }
 
 /* Authenticator container - matches console exactly */
+/* Background image is applied via inline style in StorachaAuth.tsx using the bundled asset. */
 .authenticator {
-  background: #EFE3F3 url("/racha-fire.jpg") bottom left;
-  background-size: 100% auto;
-  background-position: bottom;
-  background-repeat: no-repeat;
+  background-color: #EFE3F3;
   width: 100%;
   min-height: 100dvh;
   display: flex;
