@@ -274,13 +274,6 @@ export const StorachaAuthForm = ({
       Authorize
     </button>
   )
-  const defaultRenderTerms = () => (
-    <p>
-      By registering with storacha.network, you agree to the storacha.network{' '}
-      <a href="https://docs.storacha.network/terms/">Terms of Service</a>.
-    </p>
-  )
-
   const formContent = (
     <form 
       {...formProps} 
@@ -302,7 +295,7 @@ export const StorachaAuthForm = ({
   const content = (
     <>
       {renderContainer ? renderContainer(formContent) : formContent}
-      {(renderTerms || defaultRenderTerms)()}
+      {renderTerms?.()}
     </>
   )
 
