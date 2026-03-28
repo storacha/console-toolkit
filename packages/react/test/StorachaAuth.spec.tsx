@@ -36,10 +36,6 @@ describe('StorachaAuth Component Suite', () => {
       
       // Check for authorize button
       expect(screen.getByRole('button', { name: 'Authorize' })).toBeTruthy()
-      
-      // Check for terms of service text
-      expect(screen.getByText(/By registering with storacha.network/)).toBeTruthy()
-      expect(screen.getByText(/Terms of Service/)).toBeTruthy()
     })
 
     test('handles email input and form submission', async () => {

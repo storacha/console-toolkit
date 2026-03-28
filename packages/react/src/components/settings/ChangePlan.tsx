@@ -206,9 +206,15 @@ export const ChangePlanDelegateForm = React.forwardRef<
       e.preventDefault()
       if (!client || !account || !email) return
 
+      const currentSpace = client.currentSpace()
+      if (!currentSpace) {
+        console.error('No current space — a space must be selected before delegating billing access')
+        return
+      }
+
       setIsDelegating(true)
       try {
-        // Create delegation for billing access
+        // Create the delegation for billing access capabilities
         const audience = DID.parse(DidMailto.fromEmail(email as `${string}@${string}`))
         const delegation = await client.createDelegation(audience, [
           'plan/create-admin-session',
@@ -217,13 +223,13 @@ export const ChangePlanDelegateForm = React.forwardRef<
         ], {
           expiration: Date.now() + 60 * 60 * 24 * 365 * 1000, // 1 year
         })
-        
-        // Archive and store the delegation
-        const archiveRes = await delegation.archive()
-        if (archiveRes.error) {
-          throw new Error('Failed to archive delegation')
-        }
-        
+
+        // Propagate the delegation to the access service so the recipient can claim it
+        await client.capability.access.delegate({
+          space: currentSpace.did(),
+          delegations: [delegation],
+        })
+
         setEmail('')
       } catch (error) {
         console.error('Error delegating billing portal access:', error)

@@ -146,14 +146,14 @@ export const SpaceListProvider = ({
     setPrevCursor(undefined)
   }, [])
 
-  const fetchUploads = useCallback(async (currentCursor?: string, isPrev = false) => {
+  const fetchUploads = useCallback(async (currentCursor?: string, isPrev = false, isRefresh = false) => {
     if (!client || !space) {
       setUploads([])
       return
     }
 
     try {
-      if (isValidating) {
+      if (isRefresh) {
         setIsValidating(true)
       } else {
         setIsLoading(true)
@@ -181,7 +181,7 @@ export const SpaceListProvider = ({
       setIsLoading(false)
       setIsValidating(false)
     }
-  }, [client, space, pageSize, isValidating])
+  }, [client, space, pageSize])
 
   // Update space when prop changes
   useEffect(() => {
@@ -196,16 +196,14 @@ export const SpaceListProvider = ({
   // Fetch uploads when space changes
   useEffect(() => {
     if (space) {
-      setIsLoading(true)
       void fetchUploads()
     } else {
       setUploads([])
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [space])
+  }, [space, fetchUploads])
 
   const refresh = useCallback(async () => {
-    await fetchUploads(cursor)
+    await fetchUploads(cursor, false, true)
   }, [fetchUploads, cursor])
 
   const loadNext = useCallback(async () => {

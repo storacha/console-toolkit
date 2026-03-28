@@ -22,7 +22,8 @@ export function AuthSection({ children }: { children: ReactNode }) {
               renderLogo={() => (
                 <div className="app-auth-logo-container">
                   <div className="app-auth-logo-placeholder">S</div>
-                  <h1 className="app-auth-title">Storacha</h1>
+                  <h1 className="app-auth-title">Welcome to Your Storage</h1>
+                  <p className="app-auth-subtitle">Sign in to manage your decentralized spaces and files</p>
                 </div>
               )}
               renderEmailLabel={() => (
@@ -53,14 +54,6 @@ export function AuthSection({ children }: { children: ReactNode }) {
                   )}
                 </button>
               )}
-              renderTerms={() => (
-                <p className="app-auth-terms">
-                  By registering with storacha.network, you agree to the{' '}
-                  <a href="https://docs.storacha.network/terms/" target="_blank" rel="noopener noreferrer">
-                    Terms of Service
-                  </a>.
-                </p>
-              )}
             />
           </div>
         )}
@@ -75,7 +68,7 @@ export function AuthSection({ children }: { children: ReactNode }) {
               renderLogo={() => (
                 <div className="app-auth-logo-container">
                   <div className="app-auth-logo-placeholder">S</div>
-                  <h1 className="app-auth-title">Storacha</h1>
+                  <h1 className="app-auth-title">Welcome to Your Storage</h1>
                 </div>
               )}
               renderTitle={() => (

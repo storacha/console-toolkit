@@ -50,16 +50,19 @@ export function Dashboard() {
     <div className="app-container">
       <header className="app-header">
         <div className="app-header-content">
-          <h1 className="app-title-heading">
-            <button
-              type="button"
-              className="app-title app-title-link"
-              onClick={goHome}
-              title="Go to spaces (home)"
-            >
-              Storacha Console
-            </button>
-          </h1>
+          <div className="app-title-heading">
+            <h1 className="app-title-wrap">
+              <button
+                type="button"
+                className="app-title app-title-link"
+                onClick={goHome}
+                title="Go to spaces (home)"
+              >
+                Storage Dashboard
+              </button>
+            </h1>
+            <p className="app-title-tagline">Store, manage, and share your files on a decentralized network.</p>
+          </div>
           {accounts[0] && (
             <div className="app-header-user">
               <p className="app-user">

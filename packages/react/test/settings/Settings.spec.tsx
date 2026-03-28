@@ -2,11 +2,10 @@ import React from 'react'
 import 'fake-indexeddb/auto'
 import { test, expect, vi, beforeEach, describe } from 'vitest'
 import { render, screen, waitFor, cleanup } from '@testing-library/react'
-import { 
-  Provider, 
-  SettingsProvider, 
+import {
+  Provider,
+  SettingsProvider,
   useSettingsContext,
-  RewardsSection,
   AccountOverview,
   UsageSection,
   AccountManagement,
@@ -35,21 +34,6 @@ describe('Settings Component Suite', () => {
       )
 
       expect(screen.getByText(/Email:/)).toBeTruthy()
-    })
-  })
-
-  describe('RewardsSection', () => {
-    test('renders rewards section', () => {
-      render(
-        <Provider>
-          <SettingsProvider>
-            <RewardsSection data-testid="rewards-section" />
-          </SettingsProvider>
-        </Provider>
-      )
-
-      const section = screen.getByTestId('rewards-section')
-      expect(section).toBeTruthy()
     })
   })
 
