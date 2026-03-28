@@ -16,7 +16,6 @@ export * from './components/upload/index.js'
 export {
   SettingsProvider,
   useSettingsContext,
-  RewardsSection,
   AccountOverview,
   UsageSection,
   AccountManagement,
