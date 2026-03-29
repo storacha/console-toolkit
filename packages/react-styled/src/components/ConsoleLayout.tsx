@@ -9,6 +9,8 @@ export interface ConsoleLayoutProps {
   onSpaceSelect?: (space: Space) => void
   onCreateSpace?: () => void
   onLogout?: () => void
+  onHome?: () => void
+  nav?: ReactNode
 }
 
 export function ConsoleLayout({
@@ -18,6 +20,8 @@ export function ConsoleLayout({
   onSpaceSelect,
   onCreateSpace,
   onLogout,
+  onHome,
+  nav,
 }: ConsoleLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -37,7 +41,13 @@ export function ConsoleLayout({
       <nav className={`console-sidebar${sidebarOpen ? ' open' : ''}`}>
         {/* Logo */}
         <div className="console-sidebar-logo">
-          <img src={storachaLogoUrl} alt="Storacha" />
+          {onHome ? (
+            <button className="console-sidebar-logo-btn" onClick={onHome} aria-label="Go to home">
+              <img src={storachaLogoUrl} alt="Storacha" />
+            </button>
+          ) : (
+            <img src={storachaLogoUrl} alt="Storacha" />
+          )}
         </div>
 
         {/* Spaces section — compact select */}
@@ -112,6 +122,7 @@ export function ConsoleLayout({
           <img src={storachaLogoUrl} alt="Storacha" style={{ width: '7rem' }} />
         </div>
 
+        {nav && <div className="console-main-nav">{nav}</div>}
         <main className="console-main-content">
           {children}
         </main>
