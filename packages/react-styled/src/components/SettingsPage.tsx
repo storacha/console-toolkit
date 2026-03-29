@@ -5,7 +5,12 @@ import {
   useW3,
 } from '@storacha/console-toolkit-react'
 import type { DID as DIDType } from '@ucanto/interface'
-import * as DidMailto from '@storacha/did-mailto'
+
+// did:mailto format: did:mailto:{domain}:{local} (e.g. user@example.com → did:mailto:example.com:user)
+function emailToDidMailto(email: string): DIDType<'mailto'> {
+  const [local, domain] = email.split('@')
+  return `did:mailto:${domain}:${local}` as DIDType<'mailto'>
+}
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -188,7 +193,7 @@ function BillingAdmin({ accountEmail }: { accountEmail?: string }) {
     if (!currentSpace) return
     setDelegating(true)
     try {
-      const audience = { did: () => DidMailto.fromEmail(delegateEmail as `${string}@${string}`) }
+      const audience = { did: () => emailToDidMailto(delegateEmail) }
       const delegation = await client.createDelegation(audience as never, [
         'plan/create-admin-session',
         'plan/get',
