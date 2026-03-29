@@ -111,15 +111,9 @@ export const StorachaAuthSubmitted = () => {
 export const StorachaAuthEnsurer = ({ children }: { children: ReactNode }) => {
   return (
     <HeadlessStorachaAuth.Ensurer
-      renderLoader={(type) => (
+      renderLoader={() => (
         <div className="storacha-auth-loader">
           <div className="storacha-auth-spinner" />
-          <h3 className="storacha-auth-loader-title">
-            {type === 'initializing' ? 'Initializing' : 'Authentication'}
-          </h3>
-          <p className="storacha-auth-loader-text">
-            {type === 'initializing' ? 'Setting up authentication...' : 'Loading...'}
-          </p>
         </div>
       )}
       renderForm={() => <StorachaAuthForm />}

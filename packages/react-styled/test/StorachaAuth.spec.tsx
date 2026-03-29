@@ -118,9 +118,8 @@ describe('StorachaAuth Styled Component Suite', () => {
         </Provider>
       )
 
-      // Should show the loader during initialization
-      expect(screen.getByText('Initializing')).toBeTruthy()
-      expect(screen.getByText('Setting up authentication...')).toBeTruthy()
+      // Should show the spinner loader during initialization
+      expect(document.querySelector('.storacha-auth-spinner')).toBeTruthy()
     })
 
     test('renders form after initialization when not authenticated', async () => {

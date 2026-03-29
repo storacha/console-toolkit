@@ -253,6 +253,20 @@ body,
   width: 9rem;
 }
 
+.console-sidebar-logo-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  opacity: 0.9;
+  transition: opacity 0.15s;
+}
+
+.console-sidebar-logo-btn:hover {
+  opacity: 1;
+}
+
 .console-sidebar-spaces {
   margin: 1.5rem 0 0;
 }
@@ -366,8 +380,11 @@ body,
 .console-main-content {
   flex: 1;
   padding: 3rem;
-  overflow-y: auto;
+  overflow: hidden;
   color: black;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 /* Mobile top bar */
@@ -465,14 +482,27 @@ body,
   border-bottom: 2px solid #E91315;
 }
 
+.spaces-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.spaces-empty {
+  color: #6b7280;
+  font-size: 0.9375rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
 .spaces-card {
   background: white;
   border: 1px solid #E91315;
   border-radius: 1rem;
-  overflow: hidden;
-  max-width: 540px;
-  height: calc(100vh - 13rem);
   overflow-y: auto;
+  max-width: 540px;
+  max-height: calc(100vh - 14rem);
 }
 
 .spaces-row {
@@ -523,4 +553,428 @@ body,
   white-space: nowrap;
   max-width: 420px;
   margin-top: 0.125rem;
+}
+
+/* ============================================================
+   NavTabs — top-right pill navigation bar
+   ============================================================ */
+
+.console-main-nav {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem 0;
+  flex-shrink: 0;
+}
+
+.nav-tabs {
+  display: flex;
+  border: 1px solid #E91315;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: white;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 1rem;
+  border: none;
+  border-right: 1px solid #E91315;
+  background: white;
+  color: #E91315;
+  font-family: "Epilogue", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.nav-tab:last-child {
+  border-right: none;
+}
+
+.nav-tab:hover:not(.nav-tab-active) {
+  background-color: #FFE4AE;
+}
+
+.nav-tab-active {
+  background: #E91315;
+  color: white;
+}
+
+.nav-tab-icon {
+  font-size: 0.875rem;
+}
+
+/* ============================================================
+   SpaceCreatorView — matches official Storacha console CREATE page
+   ============================================================ */
+
+.creator-card {
+  background: white;
+  border: 1px solid #E91315;
+  border-radius: 1rem;
+  padding: 1.5rem 2rem;
+  max-width: 600px;
+}
+
+.creator-field {
+  margin-bottom: 1rem;
+}
+
+.creator-label {
+  display: block;
+  font-family: "Epilogue", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #E91315;
+  margin-bottom: 0.5rem;
+}
+
+.creator-name-input {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.creator-submit {
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.creator-spinner {
+  width: 1rem !important;
+  height: 1rem !important;
+  border-width: 2px !important;
+  flex-shrink: 0;
+}
+
+.creator-error {
+  color: #E91315;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.creator-success {
+  color: #E91315;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.creator-explain {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(233, 19, 21, 0.15);
+}
+
+.creator-explain-label {
+  font-family: "Epilogue", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #E91315;
+  margin-bottom: 0.75rem;
+}
+
+.creator-explain p {
+  font-size: 0.875rem;
+  color: #374151;
+  margin: 0 0 0.5rem;
+  line-height: 1.5;
+}
+
+.creator-explain a {
+  color: #0176CE;
+  text-decoration: underline;
+}
+
+/* ============================================================
+   ImportSpaceView — matches official Storacha console IMPORT page
+   ============================================================ */
+
+.import-card {
+  background: white;
+  border: 1px solid #E91315;
+  border-radius: 1rem;
+  padding: 1.5rem 2rem;
+  max-width: 700px;
+}
+
+.import-step {
+  margin-bottom: 1.75rem;
+}
+
+.import-step:last-child {
+  margin-bottom: 0;
+}
+
+.import-step-title {
+  font-family: "Epilogue", sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #E91315;
+  margin: 0 0 0.75rem;
+}
+
+.import-step-desc {
+  font-size: 0.875rem;
+  color: #374151;
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+}
+
+.import-did-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  overflow-x: auto;
+}
+
+.import-did-text {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #374151;
+  word-break: break-all;
+}
+
+.import-did-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.import-btn-outline {
+  background: white !important;
+  color: #E91315 !important;
+}
+
+.import-btn-outline:hover {
+  background: #E91315 !important;
+  color: white !important;
+}
+
+.import-error {
+  color: #E91315;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.import-success {
+  color: #16a34a;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+/* ============================================================
+   SpaceDetail
+   ============================================================ */
+
+.space-detail-container {
+  padding: 0.75rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.space-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.space-detail-avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.space-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.space-detail-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.space-detail-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.space-detail-badge {
+  background: #e5e7eb;
+  color: #374151;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.space-detail-did {
+  font-size: 0.75rem;
+  color: #6b7280;
+  word-break: break-all;
+}
+
+.space-detail-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  padding: 0.375rem 1rem;
+  width: fit-content;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.space-detail-back {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #E91315;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.space-detail-back:hover {
+  text-decoration: underline;
+}
+
+.space-detail-breadcrumb-sep {
+  color: #9ca3af;
+}
+
+.space-detail-breadcrumb-did {
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+/* ============================================================
+   PlanGateView
+   ============================================================ */
+
+.plan-gate-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #EFE3F3;
+  padding: 2rem 1rem;
+}
+
+.plan-gate-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.plan-gate-logo {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.plan-gate-logo img {
+  height: 2rem;
+}
+
+.plan-gate-welcome {
+  text-align: center;
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.plan-gate-desc {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.plan-gate-plans {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.plan-card {
+  flex: 1;
+  min-width: 200px;
+  max-width: 260px;
+  border: 2px solid #E91315;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.plan-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.plan-card-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.plan-card-emoji {
+  font-size: 1rem;
+}
+
+.plan-card-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #E91315;
+}
+
+.plan-card-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.plan-card-feature {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.plan-card-feature-extra {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0 0 0.5rem 0;
+}
+
+.plan-card-btn {
+  margin-top: 0.75rem;
+  width: 100%;
 }
