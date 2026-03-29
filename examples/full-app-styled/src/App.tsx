@@ -13,6 +13,7 @@ import {
   FileViewerView,
   UploadToolView,
   SharingToolView,
+  SettingsPage,
   useW3,
   useStorachaAuth,
 } from '@storacha/console-toolkit-react-styled'
@@ -52,8 +53,11 @@ function Console() {
       onHome={handleHome}
       nav={<NavTabs active={tab} onTabChange={handleTabChange} hasSpace={!!selectedSpace} />}
     >
+      {/* Settings — always global, regardless of selected space */}
+      {tab === 'settings' && <SettingsPage />}
+
       {/* Space mode */}
-      {selectedSpace && (
+      {tab !== 'settings' && selectedSpace && (
         <>
           <SpaceDetail space={selectedSpace} onBack={handleHome} />
           {tab === 'uploads' && !selectedRoot && (
@@ -70,17 +74,15 @@ function Console() {
               onRemoved={() => setSelectedRoot(undefined)}
             />
           )}
-          {tab === 'upload'   && <UploadToolView space={selectedSpace} />}
-          {tab === 'share'    && <SharingToolView space={selectedSpace} />}
-          {tab === 'settings' && <p className="spaces-row-did" style={{ padding: '1rem 2rem' }}>Settings coming soon.</p>}
+          {tab === 'upload' && <UploadToolView space={selectedSpace} />}
+          {tab === 'share'  && <SharingToolView space={selectedSpace} />}
         </>
       )}
 
       {/* Home mode */}
-      {!selectedSpace && tab === 'spaces'   && <SpaceList spaces={spaces as Space[]} onSelect={handleSpaceSelect} />}
-      {!selectedSpace && tab === 'import'   && <ImportSpaceView onImport={handleSpaceSelect} />}
-      {!selectedSpace && tab === 'create'   && <SpaceCreatorView onCreated={handleSpaceSelect} />}
-      {!selectedSpace && tab === 'settings' && <p className="spaces-row-did" style={{ padding: '1rem 2rem' }}>Settings coming soon.</p>}
+      {tab !== 'settings' && !selectedSpace && tab === 'spaces' && <SpaceList spaces={spaces as Space[]} onSelect={handleSpaceSelect} />}
+      {tab !== 'settings' && !selectedSpace && tab === 'import'  && <ImportSpaceView onImport={handleSpaceSelect} />}
+      {tab !== 'settings' && !selectedSpace && tab === 'create'  && <SpaceCreatorView onCreated={handleSpaceSelect} />}
     </ConsoleLayout>
   )
 }
