@@ -5,6 +5,7 @@
   "description": "Storacha Console Integration Toolkit - Plug-and-play UI components for seamless integration",
   "packageManager": "pnpm@10.1.0",
   "scripts": {
+    "prepare": "pnpm --filter \"./packages/*\" run build",
     "build": "pnpm --filter \"./packages/*\" run build && pnpm --filter \"./examples/*\" --filter \"./integration-guide/*\" run build",
     "ci": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build",
     "dev": "pnpm -r dev",

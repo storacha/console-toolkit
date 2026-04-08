@@ -1,31 +1,54 @@
-# Styled Auth Example
+# styled-auth
 
-This example demonstrates the **quickest way** to integrate Storacha authentication using pre-styled components that match console.storacha.network.
+The minimal path to working Storacha authentication. Install one package, import one CSS file, render two components. The UI matches the Storacha console exactly — fire background, logo, email form, and check-email confirmation screen included.
 
-## What you get
-- Console-exact UI
-- Built-in logo, background and styles
-- Complete authentication flow with almost zero setup
+---
 
-## Run locally
+## Integration pattern
+
+Install the styled package:
+
 ```bash
-pnpm install
-pnpm dev
+npm install @storacha/console-toolkit-react-styled
 ```
 
-## Implementation
+Import the CSS once at your entry point:
 
 ```tsx
-import { Provider } from '@storacha/console-toolkit-react'
-import { StorachaAuth, useStorachaAuth } from '@storacha/console-toolkit-react-styled'
 import '@storacha/console-toolkit-react-styled/styles.css'
+```
+
+### Minimal implementation
+
+`Provider`, `StorachaAuth`, `useW3`, and `useStorachaAuth` are all available from the styled package — no separate headless import needed:
+
+```tsx
+import {
+  Provider,
+  StorachaAuth,
+  useW3,
+  useStorachaAuth,
+} from '@storacha/console-toolkit-react-styled'
+import '@storacha/console-toolkit-react-styled/styles.css'
+
+function AuthenticatedApp() {
+  const [{ accounts }] = useW3()
+  const auth = useStorachaAuth()
+
+  return (
+    <div>
+      <p>Signed in as {accounts[0]?.toEmail()}</p>
+      <button onClick={auth.logoutWithTracking}>Sign out</button>
+    </div>
+  )
+}
 
 function App() {
   return (
     <Provider>
       <StorachaAuth>
         <StorachaAuth.Ensurer>
-          <YourApp />
+          <AuthenticatedApp />
         </StorachaAuth.Ensurer>
       </StorachaAuth>
     </Provider>
@@ -33,12 +56,28 @@ function App() {
 }
 ```
 
-## Customization
+`StorachaAuth.Ensurer` handles the full state machine — initializing, form, submitted, authenticated — with no configuration required.
 
-While using pre-styled components, you can still customize:
+### Optional props
 
-- `serviceName` - Custom service name
-- `termsUrl` - Custom terms of service URL
-- `onAuthEvent` - Analytics event tracking
+```tsx
+<StorachaAuth
+  onAuthEvent={(event, properties) => {
+    // analytics hook — receives events like 'login', 'logout'
+    analytics.track(event, properties)
+  }}
+>
+```
 
-For complete styling control, see the `headless-auth` example.
+For complete control over the auth UI, see the [`headless-auth`](../headless-auth/) example.
+
+---
+
+## Run this example
+
+```bash
+# From the repo root
+pnpm install
+cd examples/styled-auth
+pnpm dev
+```

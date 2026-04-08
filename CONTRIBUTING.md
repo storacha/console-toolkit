@@ -19,7 +19,7 @@ Thanks for your interest in contributing. This guide walks through everything fr
 2. Clone your fork:
 
    ```bash
-   git clone https://github.com/storacha/console-toolkit
+   git clone https://github.com/YOUR_USERNAME/console-toolkit
    cd console-toolkit
    ```
 
@@ -39,7 +39,7 @@ From the repo root:
 pnpm install
 ```
 
-This installs dependencies for all packages and examples at once. The monorepo uses pnpm workspaces, so everything is linked together automatically.
+This installs dependencies for all packages and examples at once and automatically builds the local packages (`packages/react` and `packages/react-styled`). The monorepo uses pnpm workspaces, so everything is linked together automatically.
 
 ---
 
@@ -51,6 +51,7 @@ packages/
   react-styled/       # @storacha/console-toolkit-react-styled (styled wrapper)
 
 examples/
+  full-app-styled/    # Complete example using pre-styled components
   full-app-headless/  # Complete example with custom UI
   headless-auth/      # Auth-only with custom styling
   styled-auth/        # Auth using the styled package
@@ -73,16 +74,10 @@ Create a branch for your work:
 git checkout -b your-branch-name
 ```
 
-If you are changing a component in `packages/react`, build it first so the examples can pick up your changes:
+If you are changing a component in `packages/react` or `packages/react-styled`, run the package in watch mode so examples pick up your changes automatically:
 
 ```bash
 cd packages/react
-pnpm build
-```
-
-Or run it in watch mode while you develop:
-
-```bash
 pnpm dev
 ```
 
