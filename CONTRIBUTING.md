@@ -51,6 +51,7 @@ packages/
   react-styled/       # @storacha/console-toolkit-react-styled (styled wrapper)
 
 examples/
+  full-app-styled/    # Complete example using pre-styled components
   full-app-headless/  # Complete example with custom UI
   headless-auth/      # Auth-only with custom styling
   styled-auth/        # Auth using the styled package

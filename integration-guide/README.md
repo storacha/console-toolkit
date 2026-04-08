@@ -1,6 +1,6 @@
 # Integration Guide
 
-Real-world integration examples showing how to embed the Storacha Console Toolkit into a partner application. Both examples demonstrate the complete flow: authentication, space management, file uploads, sharing, and settings.
+Real-world integration examples showing how to embed the Storacha Console Toolkit into an application end-to-end. Both examples cover the complete flow: authentication, space management, file uploads, sharing, and settings.
 
 ---
 
@@ -10,23 +10,9 @@ Real-world integration examples showing how to embed the Storacha Console Toolki
 
 Integrates with Dmail (`@dmail.ai`) for email-based authentication and file storage. Includes iframe support for embedded contexts.
 
-```bash
-cd dmail-integration
-pnpm install
-pnpm dev
-# http://localhost:3001
-```
-
 ### Web3Mail Integration
 
 Integrates with Web3Mail / EtherMail (`@ethmail.cc`, `@ethermail.io`) for decentralized email authentication and file storage.
-
-```bash
-cd web3mail-integration
-pnpm install
-pnpm dev
-# http://localhost:3002
-```
 
 ---
 
@@ -35,17 +21,28 @@ pnpm dev
 Both integrations follow the same provider order — this order matters:
 
 ```tsx
-<Provider>
-  <StorachaAuth>
-    <StorachaAuth.Ensurer>
-      <SpaceEnsurer>
-        <SpacePicker>
-          {/* Your application components */}
-        </SpacePicker>
-      </SpaceEnsurer>
-    </StorachaAuth.Ensurer>
-  </StorachaAuth>
-</Provider>
+import {
+  Provider,
+  StorachaAuth,
+  SpaceEnsurer,
+  SpacePicker,
+} from '@storacha/console-toolkit-react'
+
+function App() {
+  return (
+    <Provider>
+      <StorachaAuth>
+        <StorachaAuth.Ensurer>
+          <SpaceEnsurer>
+            <SpacePicker>
+              {/* application components */}
+            </SpacePicker>
+          </SpaceEnsurer>
+        </StorachaAuth.Ensurer>
+      </StorachaAuth>
+    </Provider>
+  )
+}
 ```
 
 Each layer is responsible for one thing:
@@ -69,16 +66,12 @@ Each layer is responsible for one thing:
 
 ---
 
-## Running from the monorepo root
+## Run
 
-Build the toolkit packages first, then run either integration:
+From the repo root:
 
 ```bash
-# From the repo root
 pnpm install
-pnpm build
-
-# Then start an integration
 cd integration-guide/dmail-integration && pnpm dev
 # or
 cd integration-guide/web3mail-integration && pnpm dev

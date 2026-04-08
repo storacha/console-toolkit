@@ -1,31 +1,34 @@
-# Iframe Auth Example
+# iframe-auth
 
-This example demonstrates how to run Storacha authentication **inside an iframe** while the parent application controls UX.
+Storacha authentication embedded inside an iframe. This example demonstrates the `enableIframeSupport` prop and how a single app can serve as both the host page and the iframe content depending on how it is loaded.
 
-## What this example shows
-- Host app embeds an iframe containing Storacha authentication
-- User logs in inside the iframe
-- The host app receives authentication state (no redirects)
+Use this pattern when your integration lives inside an iframe context and you need auth to work without redirects or cross-window navigation.
 
-## Run locally
+---
+
+## Integration pattern
+
+Install the packages:
+
 ```bash
-pnpm install
-pnpm dev
+npm install @storacha/console-toolkit-react-styled
 ```
 
-## Implementation
+### The `enableIframeSupport` prop
+
+Pass `enableIframeSupport={true}` to `StorachaAuth` when running inside an iframe. This switches the auth flow to iframe-aware handling:
 
 ```tsx
-import { Provider } from '@storacha/console-toolkit-react'
-import { StorachaAuth, useStorachaAuth } from '@storacha/console-toolkit-react-styled'
+import { Provider, useW3, useStorachaAuth } from '@storacha/console-toolkit-react'
+import { StorachaAuth } from '@storacha/console-toolkit-react-styled'
 import '@storacha/console-toolkit-react-styled/styles.css'
 
-function IframeAuth() {
+function IframeApp() {
   return (
     <Provider>
       <StorachaAuth enableIframeSupport={true}>
         <StorachaAuth.Ensurer>
-          <YourApp />
+          <AuthenticatedContent />
         </StorachaAuth.Ensurer>
       </StorachaAuth>
     </Provider>
@@ -33,12 +36,44 @@ function IframeAuth() {
 }
 ```
 
-## Usage
+### Dual-mode rendering
 
-When loaded in an iframe, the component automatically:
-1. Detects iframe context
-2. Shows Storacha authentication UI (form, submitted state, or authenticated content)
-3. Manages session state appropriately
-4. Handles authentication flow without redirects
+A common pattern is a single app that detects whether it is loaded as an iframe or as the host page, and renders accordingly:
 
-The `enableIframeSupport={true}` prop enables iframe-specific handling.
+```tsx
+function App() {
+  const isIframe = typeof window !== 'undefined' && window.self !== window.top
+
+  return (
+    <Provider>
+      {isIframe ? <IframeApp /> : <HostPage />}
+    </Provider>
+  )
+}
+```
+
+When loaded as an iframe, `IframeApp` renders the auth flow. When loaded as the top-level document, `HostPage` renders the host UI with the iframe embedded inside it.
+
+### Auth events
+
+Use `onAuthEvent` to observe the auth lifecycle:
+
+```tsx
+<StorachaAuth
+  enableIframeSupport={true}
+  onAuthEvent={(event, props) => {
+    console.log('auth event:', event, props)
+  }}
+>
+```
+
+---
+
+## Run this example
+
+```bash
+# From the repo root
+pnpm install
+cd examples/iframe-auth
+pnpm dev
+```

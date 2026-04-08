@@ -1,12 +1,12 @@
 # Storacha Console Toolkit
 
-A React component library for embedding Storacha console features into any web application. It provides two packages: a headless package with all the logic and no styling, and a styled package with Storacha-branded UI ready to drop in.
+A React component library for embedding Storacha console features — authentication, spaces, uploads, sharing, and account management — into any web application. Ships two packages: a headless package with all the logic and zero styling, and a styled package with Storacha-branded UI ready to use.
 
 ## Packages
 
 ### `@storacha/console-toolkit-react`
 
-Headless components — all authentication, space management, upload, and settings logic with zero built-in styling. You control every pixel.
+Headless components. All behavior and state, no styling. You control the markup, CSS, and design system — the same approach as Radix UI or Headless UI.
 
 ```bash
 npm install @storacha/console-toolkit-react
@@ -14,7 +14,7 @@ npm install @storacha/console-toolkit-react
 
 ### `@storacha/console-toolkit-react-styled`
 
-Pre-styled components that match the Storacha console UI exactly. Good for quick integrations where custom branding is not a requirement.
+Pre-styled components matching the Storacha console UI exactly. Import one CSS file and everything is styled. Re-exports `Provider`, `useW3`, and all headless components so you only need this one package.
 
 ```bash
 npm install @storacha/console-toolkit-react-styled
@@ -22,21 +22,27 @@ npm install @storacha/console-toolkit-react-styled
 
 ---
 
-## What's included
+## Quick start
 
-### Authentication
-
-`StorachaAuth` handles the complete email-based auth flow. It uses a compound component pattern so you can compose just the pieces you need.
+### Headless
 
 ```tsx
-import { Provider, StorachaAuth } from '@storacha/console-toolkit-react'
+import {
+  Provider,
+  StorachaAuth,
+  SpacePicker,
+  SpaceList,
+  UploadTool,
+} from '@storacha/console-toolkit-react'
 
 function App() {
   return (
     <Provider>
-      <StorachaAuth onAuthEvent={(event) => console.log(event)}>
+      <StorachaAuth>
         <StorachaAuth.Ensurer>
-          <MyApp />
+          <SpacePicker>
+            {/* your UI here */}
+          </SpacePicker>
         </StorachaAuth.Ensurer>
       </StorachaAuth>
     </Provider>
@@ -44,110 +50,119 @@ function App() {
 }
 ```
 
-Sub-components: `StorachaAuth.Form`, `StorachaAuth.Submitted`, `StorachaAuth.Ensurer`, `StorachaAuth.EmailInput`, `StorachaAuth.CancelButton`
-
-`StorachaAuth.Ensurer` handles the loading → form → submitted → authenticated state machine. Once the user is authenticated it renders `children`. Until then it renders the appropriate UI state.
-
-For iframe contexts, pass `enableIframeSupport={true}` to `StorachaAuth` and it will wait for authentication signals from the parent window rather than showing the form.
-
-### Space management
-
-Components for listing, creating, and selecting spaces:
-
-- **`SpacePicker`** — list spaces and let the user select one
-- **`SpaceCreator`** — create a new public or private space
-- **`SpaceEnsurer`** — ensure a space is selected before rendering children
-- **`SpaceList`** — paginated list of uploads within the current space
-- **`ImportSpace`** — import an existing space by DID
-- **`PlanGate`** — block access until the user has a valid plan
-
-### Uploads
-
-- **`UploadTool`** — upload files, directories, or CAR archives with drag-and-drop and real-time progress
-- **`FileViewer`** — inspect an upload: root CID, gateway URL, shards
-
-### Settings
-
-Wrap your settings UI in `SettingsProvider` to get access to plan info, usage stats, and account management actions.
+### Styled
 
 ```tsx
-import { SettingsProvider, AccountOverview, UsageSection, AccountManagement, ChangePlan } from '@storacha/console-toolkit-react'
+import {
+  Provider,
+  StorachaAuth,
+  ConsoleLayout,
+  NavTabs,
+  SpaceList,
+  SettingsPage,
+} from '@storacha/console-toolkit-react-styled'
+import '@storacha/console-toolkit-react-styled/styles.css'
 
-function SettingsPage() {
+function App() {
   return (
-    <SettingsProvider accountDeletionURL="https://your-deletion-form.example.com">
-      <AccountOverview />
-      <UsageSection />
-      <ChangePlan />
-      <AccountManagement />
-    </SettingsProvider>
+    <Provider>
+      <StorachaAuth>
+        <StorachaAuth.Ensurer>
+          {/* your content */}
+        </StorachaAuth.Ensurer>
+      </StorachaAuth>
+    </Provider>
   )
 }
 ```
 
-`SettingsProvider` accepts optional `referralsServiceURL` and `referralURL` props if you run a referral service.
-
 ---
 
-## Provider setup
+## Components
 
-`Provider` is the root context. It initializes the Storacha client and exposes accounts, spaces, and the client instance to all child components. Wrap your entire app (or the portion using toolkit components) in it.
+### Auth
 
-```tsx
-import { Provider } from '@storacha/console-toolkit-react'
+| Component | Description |
+|---|---|
+| `Provider` | Root context. Initializes the Storacha client. Wrap your entire app in this. |
+| `StorachaAuth` | Email-based auth flow. Manages login, submitted, and authenticated states. |
+| `StorachaAuth.Ensurer` | Blocks rendering until authenticated. Shows login UI in the meantime. |
+| `StorachaAuth.Form` | Login form with render prop slots for logo, inputs, and submit button. |
+| `StorachaAuth.Submitted` | Post-submission confirmation UI with render prop slots. |
+| `StorachaAuth.EmailInput` | Controlled email input wired to auth state. |
+| `StorachaAuth.CancelButton` | Cancels a pending auth submission. |
 
-// Basic — connects to the default Storacha service
-<Provider>
-  <App />
-</Provider>
+### Spaces
 
-// Custom service endpoint
-<Provider servicePrincipal={principal} connection={connection}>
-  <App />
-</Provider>
-```
+| Component | Description |
+|---|---|
+| `SpacePicker` | Space selection context with `.Search` and `.List` sub-components. |
+| `SpaceCreator` | Creates a new space. Accepts `providerDID`, `gatewayHost`, `gatewayDID`. |
+| `SpaceList` | Lists uploads within the current space. Includes `.List` and `.Pagination`. |
+| `SpaceEnsurer` | Ensures a space is selected before rendering children. |
+| `ImportSpace` | Imports an existing space via UCAN delegation. |
+| `PlanGate` | Blocks access until the user has a valid plan. |
+
+### Uploads
+
+| Component | Description |
+|---|---|
+| `UploadTool` | File, directory, and CAR upload with drag-and-drop and progress tracking. |
+| `FileViewer` | Displays root CID, gateway URL, and shards for an upload. Includes a remove action. |
+
+### Sharing
+
+| Component | Description |
+|---|---|
+| `SharingTool` | Share a space via email or DID. Creates UCAN delegations. |
+
+### Settings
+
+| Component | Description |
+|---|---|
+| `SettingsProvider` | Context for account info, plan data, and per-space usage stats. |
+| `AccountOverview` | Displays account email and current plan name. |
+| `UsageSection` | Per-space storage usage breakdown. |
+| `AccountManagement` | Account deletion request. |
+| `ChangePlan` | Plan selection, upgrade UI, and Stripe customer portal link. |
 
 ---
 
 ## Hooks
 
-- **`useStorachaAuth()`** — access auth state and actions: `isAuthenticated`, `isLoading`, `email`, `submitted`, `setEmail`, `cancelLogin`, `logoutWithTracking`, `currentUser`
-- **`useSettingsContext()`** — access settings state: `plan`, `usage`, `accountEmail`, `planLoading`, `usageLoading`, and actions to refresh or manage the account
-- **`useW3()`** — low-level access to the raw context state from `Provider`
-
----
-
-## Using the styled package
-
-```tsx
-import { StorachaAuth } from '@storacha/console-toolkit-react-styled'
-import '@storacha/console-toolkit-react-styled/styles.css'
-
-function App() {
-  return (
-    <StorachaAuth>
-      <StorachaAuth.Form />
-    </StorachaAuth>
-  )
-}
-```
-
-The styled package re-exports `Provider`, `useW3`, and all headless components — you only need the one install command above.
+| Hook | Description |
+|---|---|
+| `useW3()` | Raw context: `client`, `accounts`, `spaces`, `logout`. |
+| `useStorachaAuth()` | Auth state and actions: `isAuthenticated`, `email`, `setEmail`, `logout`, `logoutWithTracking`. |
+| `useSettingsContext()` | Plan info, usage stats, and account management actions. |
+| `useSpacePickerContext()` | Selected space and setter. |
+| `useSpaceListContext()` | Upload list, pagination, loading, and reload. |
+| `useFileViewerContext()` | CID, URL, shards, and remove action for a viewed upload. |
+| `useUploadToolContext()` | Upload state, progress, file selection, and upload action. |
+| `useSharingToolContext()` | Sharing state and actions for email and DID delegation. |
+| `useImportSpaceContext()` | Import space state, DID, and UCAN actions. |
+| `usePlanGateContext()` | Plan status and `selectPlan` action. |
+| `useSpaceCreatorContext()` | Space creation state and submit action. |
 
 ---
 
 ## Examples
 
-Working examples are in the `examples/` directory. Run any of them with `pnpm dev` from their directory.
-
 | Example | Description |
-|---------|-------------|
-| [`full-app-headless`](./examples/full-app-headless/) | Complete integration: auth, spaces, uploads, settings — fully custom UI |
-| [`headless-auth`](./examples/headless-auth/) | Auth-only example with custom styling |
-| [`styled-auth`](./examples/styled-auth/) | Drop-in auth using the styled package |
-| [`iframe-auth`](./examples/iframe-auth/) | Authentication inside an iframe |
+|---|---|
+| [`full-app-styled`](./examples/full-app-styled/) | Complete console UI using pre-styled components — zero custom CSS required |
+| [`full-app-headless`](./examples/full-app-headless/) | Complete integration with fully custom UI and branding |
+| [`headless-auth`](./examples/headless-auth/) | Auth only with custom styling using render props |
+| [`styled-auth`](./examples/styled-auth/) | Minimal auth integration using the styled package |
+| [`iframe-auth`](./examples/iframe-auth/) | Auth embedded inside an iframe |
 
-Integration guide examples (more complex real-world integrations) are in [`integration-guide/`](./integration-guide/).
+More complex real-world integrations are in [`integration-guide/`](./integration-guide/).
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, development workflow, and PR guidelines.
 
 ---
 
@@ -156,11 +171,8 @@ Integration guide examples (more complex real-world integrations) are in [`integ
 This is a pnpm monorepo.
 
 ```bash
-# Install all dependencies
+# Install all dependencies and build packages
 pnpm install
-
-# Build all packages
-pnpm build
 
 # Run tests across all packages
 pnpm test
@@ -175,12 +187,6 @@ To develop a specific example:
 cd examples/full-app-headless
 pnpm dev
 ```
-
----
-
-## Contributing
-
-Contributions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to get set up, make changes, run the CI checks, and submit a pull request.
 
 ---
 
