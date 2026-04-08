@@ -9,7 +9,7 @@ A React component library for embedding Storacha console features into any web a
 Headless components — all authentication, space management, upload, and settings logic with zero built-in styling. You control every pixel.
 
 ```bash
-npm install @storacha/console-toolkit-react @storacha/ui-core
+npm install @storacha/console-toolkit-react
 ```
 
 ### `@storacha/console-toolkit-react-styled`
@@ -17,7 +17,7 @@ npm install @storacha/console-toolkit-react @storacha/ui-core
 Pre-styled components that match the Storacha console UI exactly. Good for quick integrations where custom branding is not a requirement.
 
 ```bash
-npm install @storacha/console-toolkit-react-styled @storacha/ui-core
+npm install @storacha/console-toolkit-react-styled
 ```
 
 ---
@@ -132,7 +132,7 @@ function App() {
 }
 ```
 
-The styled package re-exports all headless components and adds Storacha-branded CSS on top. You still need `Provider` from the headless package.
+The styled package re-exports `Provider`, `useW3`, and all headless components — you only need the one install command above.
 
 ---
 
