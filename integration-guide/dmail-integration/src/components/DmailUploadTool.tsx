@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react'
-import type { UnknownLink } from '@storacha/ui-core'
+import type { UnknownLink } from '@storacha/console-toolkit-react'
 import {
   UploadTool,
   useUploadToolContext,

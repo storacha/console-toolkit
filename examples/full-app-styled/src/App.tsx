@@ -18,7 +18,7 @@ import {
   useStorachaAuth,
 } from '@storacha/console-toolkit-react-styled'
 import type { Space, NavTab } from '@storacha/console-toolkit-react-styled'
-import type { UnknownLink } from '@storacha/ui-core'
+import type { UnknownLink } from '@storacha/console-toolkit-react-styled'
 
 function Console() {
   const [{ spaces }] = useW3()

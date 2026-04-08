@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
-import type { Space, UnknownLink } from '@storacha/ui-core'
+import type { Space, UnknownLink } from '@storacha/console-toolkit-react'
 import {
   SpacePicker,
   SpaceCreator,

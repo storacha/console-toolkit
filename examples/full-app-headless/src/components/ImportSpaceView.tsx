@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react'
-import type { Space } from '@storacha/ui-core'
+import type { Space } from '@storacha/console-toolkit-react'
 import { useImportSpaceContext } from '@storacha/console-toolkit-react'
 
 export function ImportSpaceView({ onImport: _onImport }: { onImport: (space: Space) => void }) {

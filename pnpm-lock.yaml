@@ -63,9 +63,6 @@ importers:
       '@storacha/console-toolkit-react':
         specifier: workspace:^
         version: link:../../packages/react
-      '@storacha/ui-core':
-        specifier: ^2.4.0
-        version: 2.4.145(encoding@0.1.13)
       react:
         specifier: ^18.0.0
         version: 18.3.1
@@ -94,9 +91,6 @@ importers:
       '@storacha/console-toolkit-react-styled':
         specifier: workspace:^
         version: link:../../packages/react-styled
-      '@storacha/ui-core':
-        specifier: ^2.4.0
-        version: 2.4.145(encoding@0.1.13)
       react:
         specifier: ^18.0.0
         version: 18.3.1
@@ -125,9 +119,6 @@ importers:
       '@storacha/console-toolkit-react':
         specifier: workspace:^
         version: link:../../packages/react
-      '@storacha/ui-core':
-        specifier: ^2.4.0
-        version: 2.4.145(encoding@0.1.13)
       react:
         specifier: ^18.0.0
         version: 18.3.1
@@ -159,9 +150,6 @@ importers:
       '@storacha/console-toolkit-react-styled':
         specifier: workspace:^
         version: link:../../packages/react-styled
-      '@storacha/ui-core':
-        specifier: ^2.4.0
-        version: 2.4.145(encoding@0.1.13)
       react:
         specifier: ^18.0.0
         version: 18.3.1
@@ -193,9 +181,6 @@ importers:
       '@storacha/console-toolkit-react-styled':
         specifier: workspace:^
         version: link:../../packages/react-styled
-      '@storacha/ui-core':
-        specifier: ^2.4.0
-        version: 2.4.145(encoding@0.1.13)
       react:
         specifier: ^18.0.0
         version: 18.3.1
@@ -227,9 +212,6 @@ importers:
       '@storacha/console-toolkit-react-styled':
         specifier: workspace:*
         version: link:../../packages/react-styled
-      '@storacha/ui-core':
-        specifier: ^2.4.0
-        version: 2.4.145(encoding@0.1.13)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -261,9 +243,6 @@ importers:
       '@storacha/console-toolkit-react-styled':
         specifier: workspace:*
         version: link:../../packages/react-styled
-      '@storacha/ui-core':
-        specifier: ^2.4.0
-        version: 2.4.145(encoding@0.1.13)
       react:
         specifier: ^18.2.0
         version: 18.3.1
