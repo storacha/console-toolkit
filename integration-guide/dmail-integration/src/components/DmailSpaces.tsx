@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
-import type { UnknownLink } from '@storacha/ui-core'
+import type { UnknownLink } from '@storacha/console-toolkit-react'
 
 import {
   SpaceEnsurer,

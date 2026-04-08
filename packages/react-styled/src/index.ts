@@ -22,7 +22,7 @@ export * from './components/UploadToolView.js'
 export * from './components/SharingToolView.js'
 export * from './components/SettingsPage.js'
 export { Provider, useW3, useStorachaAuth } from '@storacha/console-toolkit-react'
-export type { Space } from '@storacha/ui-core'
+export type { Space, UnknownLink } from '@storacha/console-toolkit-react'
 export * from './assets/index.js'
 
 
