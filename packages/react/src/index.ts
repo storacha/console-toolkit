@@ -6,6 +6,7 @@
  * giving you complete control over the appearance.
  */
 
+export type { Space, UnknownLink } from '@storacha/ui-core'
 export * from './components/StorachaAuth.js'
 export * from './hooks/useStorachaAuth.js'
 export * from './providers/Provider.js'
